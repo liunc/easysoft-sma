@@ -8,10 +8,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+
+import com.easysoft.lib.jdb.infrastructure.BaseRepositoryImpl;
 
 @ComponentScan("com.easysoft")
 @EnableJpaAuditing
+@EnableJpaRepositories(repositoryBaseClass = BaseRepositoryImpl.class)
 @SpringBootApplication
 public class EasysoftSmaApplication {
 
@@ -29,12 +33,6 @@ public class EasysoftSmaApplication {
 		validator.setValidationMessageSource(getMessageSource());
 		return validator;
 	}
-	
-	//让Spring管理JPAQueryFactory
-//    @Bean
-//    public JPAQueryFactory jpaQueryFactory(EntityManager entityManager){
-//        return new JPAQueryFactory(entityManager);
-//    }
     
 	public static void main(String[] args) {
 		SpringApplication.run(EasysoftSmaApplication.class, args);

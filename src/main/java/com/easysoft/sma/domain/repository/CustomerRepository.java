@@ -1,9 +1,9 @@
 package com.easysoft.sma.domain.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.easysoft.lib.jdb.domain.repository.BaseRepository;
 import com.easysoft.sma.domain.entity.Customer;
 
-public interface CustomerRepository extends JpaRepository<Customer, String> {
+public interface CustomerRepository extends BaseRepository<Customer, String> {
 
 	public boolean existsByCategoryId(String categoryId);
 
