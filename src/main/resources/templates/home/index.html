@@ -1,0 +1,59 @@
+<html xmlns:th="http://www.thymeleaf.org"
+	th:replace="shared/layout_default">
+<th:block th:fragment="page_level_plugins_styles">
+	 
+</th:block>
+<th:block th:fragment="page_title">
+		<span th:text="#{homepage}"> </span> 
+</th:block>
+<div th:fragment="page_bar">
+	<!--begin::Item-->
+	<a href="#" class="opacity-75 hover-opacity-100">
+		<i class="flaticon2-shelter text-white icon-1x"></i>
+	</a>
+	<!--end::Item-->
+	<!--begin::Item-->
+	<span class="label label-dot label-sm bg-white opacity-75 mx-3"></span>
+	<a href="" class="text-white text-hover-white opacity-75 hover-opacity-100">Crud</a>
+	<!--end::Item-->
+	<!--begin::Item-->
+	<span class="label label-dot label-sm bg-white opacity-75 mx-3"></span>
+	<a href="" class="text-white text-hover-white opacity-75 hover-opacity-100">KTDatatable</a>
+	<!--end::Item-->
+	<!--begin::Item-->
+	<span class="label label-dot label-sm bg-white opacity-75 mx-3"></span>
+	<a href="" class="text-white text-hover-white opacity-75 hover-opacity-100">Base</a>
+	<!--end::Item-->
+	<!--begin::Item-->
+	<span class="label label-dot label-sm bg-white opacity-75 mx-3"></span>
+	<a href="" class="text-white text-hover-white opacity-75 hover-opacity-100">Ajax Data</a>
+	<!--end::Item-->
+</div>
+<th:block th:fragment="content">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="portlet">
+				<div class="portlet-body">
+
+					
+				</div>
+			</div>
+		</div>
+	</div>
+</th:block>
+<th:block th:fragment="page_level_plugins_scripts">
+	 
+</th:block>
+<th:block th:fragment="page_level_scripts">
+	<script type="text/javascript" th:inline="javascript">
+		/*<![CDATA[*/
+		$(function() {
+			
+			highlightCurrentUrl();
+			
+		});	
+		
+		/*]]>*/
+	</script>
+</th:block>
+</html>
