@@ -1,0 +1,124 @@
+<div class="modal-header" xmlns:th="http://www.thymeleaf.org">
+	<button type="button" class="close" data-dismiss="modal"
+		aria-hidden="true"></button>
+	<h4 class="modal-title" th:text="#{add_customer_category}"></h4>
+</div>
+<div class="modal-body" xmlns:th="http://www.thymeleaf.org">
+	<div class="row">
+		<div class="col-md-12">
+			<form id="add_category_form" action="#" class="form-horizontal">
+				<div class="form-body">
+
+					<div id="add_category_alert"></div>
+					
+					<div class="form-group">
+						<label class="control-label col-md-3"> <span
+							th:text="#{name}"></span><span class="required">
+								* </span>
+						</label>
+						<div class="col-md-6">
+							<input type="text" id="add_name" name="add_name"
+								class="form-control input-sm" />
+						</div>
+						<div class="col-md-3"></div>
+					</div>
+
+					<div class="form-group">
+						<label class="control-label col-md-3"> <span
+							th:text="#{remark}"></span>
+						</label>
+						<div class="col-md-6">
+							<textarea class="form-control input-sm" id="add_remark"
+								name="add_remark"></textarea>
+						</div>
+						<div class="col-md-3"></div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<div class="modal-footer" xmlns:th="http://www.thymeleaf.org">
+	<button type="button" id="btn_add_close" class="btn default"
+		data-dismiss="modal">
+		<i class="fa fa-close"></i> <span th:text="#{close}"></span>
+	</button>
+	<button type="button" id="btn_add_submit" class="btn blue">
+		<i class="fa fa-check"></i> <span th:text="#{submit}"></span>
+	</button>
+</div>
+
+<script type="text/javascript" th:inline="javascript">
+	/*<![CDATA[*/
+
+	$(function() {
+
+		$('#add_category_form').validate({
+			errorElement : 'span',
+			errorClass : 'help-block help-block-error',
+			focusInvalid : false,
+			ignore : '',
+			rules : {
+				add_name : {
+					required : true,
+					maxlength : 40
+				},
+				add_remark : {
+					maxlength : 512
+				}
+			},
+			messages : {},
+			invalidHandler : function(e, t) {
+			},
+			errorPlacement : function(e, r) {
+				r.parent().next().html(e)
+			},
+			highlight : function(e) {
+				$(e).closest(".form-group").addClass("has-error")
+			},
+			unhighlight : function(e) {
+				$(e).closest(".form-group").removeClass("has-error")
+			},
+			success : function(e) {
+				e.closest(".form-group").removeClass("has-error")
+			},
+			submitHandler : function(e) {
+				var request = {};
+				request.name = $.trim($('#add_name').val());
+				request.remark = $.trim($('#add_remark').val());
+
+				$.ajax({
+					url : '/api/customer-categories',
+					type : 'POST',
+					data : JSON.stringify(request),
+					contentType : 'application/json',
+					cache : false,
+					datatype : 'json',
+					success : function(json) {
+						if (json.success) {
+							$('#table_list').bootstrapTable('refresh');
+							$('#btn_add_close').click();
+						} else {
+							App.alert({
+								container : '#add_category_alert',
+								place : 'append',
+								type : 'danger',
+								message : json.message,
+								close : true,
+								reset : true,
+								focus : true,
+								closeInSeconds : 5
+							});
+						}
+					}
+				});
+			}
+		})
+
+		$('#btn_add_submit').click(function() {
+			$('#add_category_form').submit();
+		})
+	});
+
+	/*]]>*/
+</script>

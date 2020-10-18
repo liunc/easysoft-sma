@@ -6,4 +6,6 @@ import com.easysoft.sma.domain.entity.CustomerCategory;
 public interface CustomerCategoryRepository extends BaseRepository<CustomerCategory, String> {
 
 	public boolean existsByName(String name);
+
+	public boolean existsById(String id);
 }

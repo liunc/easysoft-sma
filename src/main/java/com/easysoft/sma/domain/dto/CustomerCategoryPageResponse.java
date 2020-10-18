@@ -38,12 +38,12 @@ public class CustomerCategoryPageResponse {
 		this.remark = remark;
 	}
 
-	public static void setOrder(JPAQuery<CustomerCategoryPageResponse> query, QCustomerCategory cc, Sort sort) {
+	public static void setOrder(JPAQuery<CustomerCategoryPageResponse> query, QCustomerCategory qcc, Sort sort) {
 
 		for (Sort.Order o : sort) {
 
 			String property = o.getProperty();
-			OrderSpecifier<?> spec = o.isAscending() ? orderByAsc(cc, property) : orderByDesc(cc, property);
+			OrderSpecifier<?> spec = o.isAscending() ? orderByAsc(qcc, property) : orderByDesc(qcc, property);
 
 			if (spec != null) {
 				query.orderBy(spec);
@@ -52,32 +52,32 @@ public class CustomerCategoryPageResponse {
 
 	}
 
-	private static OrderSpecifier<?> orderByAsc(QCustomerCategory cc, String property) {
+	private static OrderSpecifier<?> orderByAsc(QCustomerCategory qcc, String property) {
 		OrderSpecifier<?> spec = null;
 		switch (property) {
 
-		case "name":
-			spec = cc.name.asc();
-			break;
+			case "name":
+				spec = qcc.name.asc();
+				break;
 
-		case "remark":
-			spec = cc.remark.asc();
-			break;
+			case "remark":
+				spec = qcc.remark.asc();
+				break;
 		}
 		return spec;
 	}
 
-	private static OrderSpecifier<?> orderByDesc(QCustomerCategory cc, String property) {
+	private static OrderSpecifier<?> orderByDesc(QCustomerCategory qcc, String property) {
 		OrderSpecifier<?> spec = null;
 		switch (property) {
 
-		case "name":
-			spec = cc.name.desc();
-			break;
+			case "name":
+				spec = qcc.name.desc();
+				break;
 
-		case "remark":
-			spec = cc.remark.desc();
-			break;
+			case "remark":
+				spec = qcc.remark.desc();
+				break;
 		}
 		return spec;
 	}
