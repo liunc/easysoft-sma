@@ -5,27 +5,27 @@ import java.util.List;
 
 public class BootstrapTableResponse<T> {
 
-    private long total;
+	private long total;
 
-    private List<T> rows;
+	private List<T> rows;
 
-    public long getTotal() {
-        return total;
-    }
+	public long getTotal() {
+		return total;
+	}
 
-    public void setTotal(long total) {
-        this.total = total;
-    }
+	public void setTotal(long total) {
+		this.total = total;
+	}
 
-    public List<T> getRows() {
-        if (this.rows == null) {
-            this.rows = new ArrayList<T>();
-        }
-        return rows;
-    }
+	public List<T> getRows() {
+		if (this.rows == null) {
+			this.rows = new ArrayList<T>();
+		}
+		return rows;
+	}
 
-    public void setRows(List<T> rows) {
-        this.rows = rows;
-    }
+	public void setRows(List<T> rows) {
+		this.rows = rows;
+	}
 
 }

@@ -1,9 +1,9 @@
 package com.easysoft.sma.domain.dto;
 
 import com.easysoft.lib.jdb.domain.dto.DetailResponse;
-import com.easysoft.sma.domain.entity.CustomerCategory;
+import com.easysoft.sma.domain.entity.ProductCategory;
 
-public class CustomerCategoryDetailResponse extends DetailResponse {
+public class ProductCategoryDetailResponse extends DetailResponse {
 
 	private String name;
 
@@ -35,10 +35,10 @@ public class CustomerCategoryDetailResponse extends DetailResponse {
 		this.remark = remark;
 	}
 
-	public CustomerCategoryDetailResponse() {
+	public ProductCategoryDetailResponse() {
 	}
 
-	public CustomerCategoryDetailResponse(CustomerCategory entity) {
+	public ProductCategoryDetailResponse(ProductCategory entity) {
 		super(entity.getId(), entity.getCreater(), entity.getCreateTime(), entity.getUpdater(), entity.getUpdateTime());
 		this.name = entity.getName();
 		this.status = entity.getStatus();

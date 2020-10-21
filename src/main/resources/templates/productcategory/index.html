@@ -5,14 +5,14 @@
 </th:block>
 <th:block th:fragment="page_title">
 	<h1 class="page-title">
-		<span th:text="#{customer_category}"> </span> <small></small>
+		<span th:text="#{product_category}"> </span> <small></small>
 	</h1>
 </th:block>
 <div th:fragment="page_bar">
 	<ul class="page-breadcrumb">
 		<li><i class="icon-home"></i> <a href="/" th:text="#{homepage}"></a>
 			<i class="fa fa-angle-right"></i></li>
-		<li><span th:text="#{customer}"> </span> <i class="fa fa-angle-right"></i></li>
+		<li><span th:text="#{product}"> </span> <i class="fa fa-angle-right"></i></li>
 		<li><span th:text="#{category}"> </span> </li>
 	</ul>
 </div>
@@ -29,15 +29,24 @@
 									<label th:text="#{name}"> </label> <input id="query_name" type="text"
 										class="form-control input-sm"></input>
 								</div>
+								<div class="form-group">
+									<label th:text="#{status}"> </label> <select id="query_status"
+										class="form-control input-sm">
+										<option value="" th:text="#{all}"></option>
+										<option value="Y" th:text="#{yes}"></option>
+										<option value="N" th:text="#{no}"></option>
+									</select>
+								</div>
+
 							</div>
 						</div>
 						<div class="col-md-3 col-sm-12" style="text-align: right">
 							<button id="btn_search" class="btn btn-success btn-sm">
 								<i class="fa fa-search"></i> <span th:text="#{search}"></span>
 							</button>
-							<a th:href="@{/customer-category/add}" data-target="#modal_category" data-toggle="modal"
+							<a th:href="@{/product-category/add}" data-target="#modal_category" data-toggle="modal"
 								class="btn btn-info btn-sm">
-								<i class="fa fa-plus"></i> <span th:text="#{add}"></span>
+								<i class="fa fa-plus"></i> <span class="hidden-xs" th:text="#{add}"></span>
 							</a>
 						</div>
 					</div>
@@ -79,12 +88,11 @@
 			highlightCurrentUrl();
 
 			$('#table_list').bootstrapTable({
-				url: '/customer-category/list',
+				url: '/product-category/list',
 				method: 'post',
 				pagination: true,
 				sortable: true,
 				sortOrder: 'asc',
-				sortName: 'name',
 				striped: true,
 				pageSize: 25,
 				pageList: [10, 25, 50, 100],
@@ -96,7 +104,8 @@
 						offset: params.offset,  //页码
 						sort: params.sort,
 						order: params.order,
-						name: $.trim($('#query_name').val())
+						name: $.trim($('#query_name').val()),
+						status: $.trim($('#query_status').val())
 					};
 				},
 				// toolbar :'#toolbar',
@@ -112,6 +121,14 @@
 						formatter: 'nameFormatter'
 					},
 					{
+						field: 'status',
+						title: /*[[#{ status }]]*/ 'status',
+						sortable: true,
+						width: 100,
+						align: 'center',
+						formatter: 'statusFormatter'
+					},
+					{
 						field: 'remark',
 						title: /*[[#{ remark }]]*/ 'remark',
 						sortable: true
@@ -119,7 +136,7 @@
 					{
 						field: 'oper',
 						title: /*[[#{ action }]]*/ 'action',
-						width: 110, 
+						width: 110,
 						align: 'center',
 						formatter: 'operateFormatter'
 					}
@@ -133,14 +150,25 @@
 		});
 
 		function nameFormatter(value, row, index) {
-			return '<a href="/customer-category/detail_' + row.id + '" data-target="#modal_category" data-toggle="modal" >'
+			return '<a href="/product-category/detail_' + row.id + '" data-target="#modal_category" data-toggle="modal" >'
 				+ value + '</a>';
 		}
 
+		function statusFormatter(value, row, index) {
+			$('#query_status option').each(function () {
+				if ($(this).val() == value) {
+					value = $(this).text();
+					return;
+				}
+			});
+
+			return value;
+		}
+
 		function operateFormatter(value, row, index) {
-			return '<a href="/customer-category/edit_' + row.id + '" data-target="#modal_category" data-toggle="modal" class="btn btn-circle btn-icon-only btn-default" title="' + /*[[#{ edit }]]*/ 'edit' 
-			+ '"><i class="fa fa-pencil"></i></a>'
-				+ '<a href="javascript:;" class="btn btn-circle btn-icon-only btn-default" onclick="deleteCategory(\'' + row.id + '\')" title="' + /*[[#{ delete}]]*/ 'delete' 
+			return '<a href="/product-category/edit_' + row.id + '" data-target="#modal_category" data-toggle="modal" class="btn btn-circle btn-icon-only btn-default" title="' + /*[[#{ edit }]]*/ 'edit'
+				+ '"><i class="fa fa-pencil"></i></a>'
+				+ '<a href="javascript:;" class="btn btn-circle btn-icon-only btn-default" onclick="deleteCategory(\'' + row.id + '\')" title="' + /*[[#{ delete}]]*/ 'delete'
 				+ '"><i class="fa fa-remove"></i></a>';
 		}
 
@@ -149,7 +177,7 @@
 				return;
 			}
 			$.ajax({
-				url: '/api/customer-categories/' + id,
+				url: '/api/product-categories',
 				type: 'DELETE',
 				contentType: 'application/json',
 				cache: false,
@@ -170,7 +198,7 @@
 						container: '#action_alert',
 						place: 'prepend',
 						type: alertType,
-						message: message,
+						message: /*[[#{ delete_failed }]]*/ 'delete_failed' + message,
 						close: true,
 						reset: true,
 						focus: true,

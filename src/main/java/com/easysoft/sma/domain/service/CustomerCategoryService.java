@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.easysoft.sma.domain.dto.CustomerCategoryAddRequest;
 import com.easysoft.sma.domain.dto.CustomerCategoryDetailResponse;
-import com.easysoft.sma.domain.dto.CustomerCategoryPageQuery;
+import com.easysoft.sma.domain.dto.CustomerCategoryPageRequest;
 import com.easysoft.sma.domain.dto.CustomerCategoryPageResponse;
 import com.easysoft.sma.domain.dto.CustomerCategoryUpdateRequest;
 import com.easysoft.lib.common.exception.BusinessException;
@@ -25,5 +25,5 @@ public interface CustomerCategoryService {
 
 	public List<TextValueObject> findAll();
 
-	public PageResponse<CustomerCategoryPageResponse> page(Pageable pageable, CustomerCategoryPageQuery request);
+	public PageResponse<CustomerCategoryPageResponse> page(Pageable pageable, CustomerCategoryPageRequest request);
 }

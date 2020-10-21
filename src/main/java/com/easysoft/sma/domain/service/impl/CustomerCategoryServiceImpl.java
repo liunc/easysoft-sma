@@ -16,7 +16,7 @@ import com.easysoft.lib.jdb.domain.dto.PageResponse;
 import com.easysoft.lib.jdb.domain.dto.TextValueObject;
 import com.easysoft.sma.domain.dto.CustomerCategoryAddRequest;
 import com.easysoft.sma.domain.dto.CustomerCategoryDetailResponse;
-import com.easysoft.sma.domain.dto.CustomerCategoryPageQuery;
+import com.easysoft.sma.domain.dto.CustomerCategoryPageRequest;
 import com.easysoft.sma.domain.dto.CustomerCategoryPageResponse;
 import com.easysoft.sma.domain.dto.CustomerCategoryUpdateRequest;
 import com.easysoft.sma.domain.entity.CustomerCategory;
@@ -117,14 +117,19 @@ public class CustomerCategoryServiceImpl implements CustomerCategoryService {
 	}
 
 	@Override
-	public PageResponse<CustomerCategoryPageResponse> page(Pageable pageable, CustomerCategoryPageQuery request) {
+	public PageResponse<CustomerCategoryPageResponse> page(Pageable pageable, CustomerCategoryPageRequest request) {
 
 		QCustomerCategory cc = QCustomerCategory.customerCategory;
 		JPAQuery<CustomerCategoryPageResponse> query = jpaQueryFactory
 				.select(Projections.bean(CustomerCategoryPageResponse.class, cc.id, cc.name, cc.remark)).from(cc);
 
-		if (request != null && StringUtils.hasText(request.getName())) {
-			query.where(cc.name.like("%" + request.getName() + "%"));
+		if (request != null) {
+			if (StringUtils.hasText(request.getName())) {
+				query.where(cc.name.like("%" + request.getName() + "%"));
+			}
+			if (StringUtils.hasText(request.getStatus())) {
+				query.where(cc.status.eq(request.getStatus()));
+			}
 		}
 
 		CustomerCategoryPageResponse.setOrder(query, cc, pageable.getSort());

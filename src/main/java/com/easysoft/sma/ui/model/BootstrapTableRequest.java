@@ -1,51 +1,52 @@
 package com.easysoft.sma.ui.model;
 
 public class BootstrapTableRequest {
-    private int limit;
 
-    private int offset;
+	private int limit;
 
-    private String sort;
+	private int offset;
 
-    private String order;
+	private String sort;
 
-    public int getLimit() {
-        return limit;
-    }
+	private String order;
 
-    public void setLimit(int limit) {
-        this.limit = limit;
-    }
+	public int getLimit() {
+		return limit;
+	}
 
-    public int getOffset() {
-        return offset;
-    }
+	public void setLimit(int limit) {
+		this.limit = limit;
+	}
 
-    public void setOffset(int offset) {
-        this.offset = offset;
-    }
+	public int getOffset() {
+		return offset;
+	}
 
-    public String getSort() {
-        return sort;
-    }
+	public void setOffset(int offset) {
+		this.offset = offset;
+	}
 
-    public void setSort(String sort) {
-        this.sort = sort;
-    }
+	public String getSort() {
+		return sort;
+	}
 
-    public String getOrder() {
-        return order;
-    }
+	public void setSort(String sort) {
+		this.sort = sort;
+	}
 
-    public void setOrder(String order) {
-        this.order = order;
-    }
+	public String getOrder() {
+		return order;
+	}
 
-    public int getPage() {
-        return this.offset / this.limit;
-    }
+	public void setOrder(String order) {
+		this.order = order;
+	}
 
-    public boolean isDesc() {
-        return this.order.equalsIgnoreCase("desc");
-    }
+	public int getPage() {
+		return this.offset / this.limit;
+	}
+
+	public boolean isDesc() {
+		return this.order.equalsIgnoreCase("desc");
+	}
 }

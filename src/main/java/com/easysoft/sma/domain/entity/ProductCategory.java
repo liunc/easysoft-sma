@@ -41,17 +41,11 @@ public class ProductCategory extends BaseEntity {
 		this.status = ZeroOne.ONE;
 	}
 
-	public void update(String name, String remark) {
+	public void update(String name, String status, String remark) {
 
 		this.name = name;
+		this.status = ZeroOne.get(status);
 		this.remark = remark;
 	}
 
-	public void change() {
-		if (ZeroOne.ONE.equals(this.status)) {
-			this.status = ZeroOne.ZERO;
-			return;
-		}
-		this.status = ZeroOne.ONE;
-	}
 }

@@ -1,22 +1,10 @@
 package com.easysoft.sma.domain.dto;
 
-public class CustomerCategoryUpdateRequest {
-
-	private String id;
+public class CustomerCategoryPageRequest {
 
 	private String name;
 
 	private String status;
-
-	private String remark;
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
 
 	public String getName() {
 		return name;
@@ -33,13 +21,14 @@ public class CustomerCategoryUpdateRequest {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	
-	public String getRemark() {
-		return remark;
+
+	public CustomerCategoryPageRequest() {
+
 	}
 
-	public void setRemark(String remark) {
-		this.remark = remark;
+	public CustomerCategoryPageRequest(String name, String status) {
+		this.name = name;
+		this.status = status;
 	}
 
 }

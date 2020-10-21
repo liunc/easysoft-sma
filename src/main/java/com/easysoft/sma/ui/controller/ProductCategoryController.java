@@ -1,12 +1,12 @@
 package com.easysoft.sma.ui.controller;
 
 import com.easysoft.lib.jdb.domain.dto.PageResponse;
-import com.easysoft.sma.domain.dto.CustomerCategoryDetailResponse;
-import com.easysoft.sma.domain.dto.CustomerCategoryPageRequest;
-import com.easysoft.sma.domain.dto.CustomerCategoryPageResponse;
-import com.easysoft.sma.domain.service.CustomerCategoryService;
+import com.easysoft.sma.domain.dto.ProductCategoryDetailResponse;
+import com.easysoft.sma.domain.dto.ProductCategoryPageRequest;
+import com.easysoft.sma.domain.dto.ProductCategoryPageResponse;
+import com.easysoft.sma.domain.service.ProductCategoryService;
 import com.easysoft.sma.ui.model.BootstrapTableResponse;
-import com.easysoft.sma.ui.model.CustomerCategoryBootstrapTableRequest;
+import com.easysoft.sma.ui.model.ProductCategoryBootstrapTableRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,25 +24,25 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-@RequestMapping("/customer-category")
-public class CustomerCategoryController {
-	private static final Logger logger = LoggerFactory.getLogger(CustomerCategoryController.class);
+@RequestMapping("/product-category")
+public class ProductCategoryController {
+	private static final Logger logger = LoggerFactory.getLogger(ProductCategoryController.class);
 
 	@Autowired
-	private CustomerCategoryService customerCategoryService;
+	private ProductCategoryService productCategoryService;
 
 	@RequestMapping("/index")
 	public String index(Model model) {
 
-		logger.info("customer category index.");
-		return "customercategory/index";
+		logger.info("product category index.");
+		return "productcategory/index";
 	}
 
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
 	@ResponseBody
-	public BootstrapTableResponse<CustomerCategoryPageResponse> categeoryList(@RequestBody CustomerCategoryBootstrapTableRequest request) {
+	public BootstrapTableResponse<ProductCategoryPageResponse> categeoryList(@RequestBody ProductCategoryBootstrapTableRequest request) {
 
-		BootstrapTableResponse<CustomerCategoryPageResponse> response = new BootstrapTableResponse<CustomerCategoryPageResponse>();
+		BootstrapTableResponse<ProductCategoryPageResponse> response = new BootstrapTableResponse<ProductCategoryPageResponse>();
 
 		Pageable pageable = PageRequest.of(request.getPage(), request.getLimit());
 		if (StringUtils.hasText(request.getSort())) {
@@ -50,8 +50,8 @@ public class CustomerCategoryController {
 					request.isDesc() ? Direction.DESC : Direction.ASC, request.getSort());
 		}
 
-		PageResponse<CustomerCategoryPageResponse> entities = this.customerCategoryService.page(pageable,
-				new CustomerCategoryPageRequest(request.getName(), request.getStatus()));
+		PageResponse<ProductCategoryPageResponse> entities = this.productCategoryService.page(pageable,
+				new ProductCategoryPageRequest(request.getName(), request.getStatus()));
 		if (entities == null || entities.getResults() == null) {
 			return response;
 		}
@@ -64,22 +64,22 @@ public class CustomerCategoryController {
 	@RequestMapping("/add")
 	public String add(Model model) {
 
-		logger.info("customer category add.");
-		return "customercategory/add";
+		logger.info("product category add.");
+		return "productcategory/add";
 	}
 
 	@RequestMapping("/edit_{id}")
 	public String edit(Model model, @PathVariable String id) {
 		
-		CustomerCategoryDetailResponse response = this.customerCategoryService.find(id);
+		ProductCategoryDetailResponse response = this.productCategoryService.find(id);
 		model.addAttribute("vm", response);
-		return "customercategory/edit";
+		return "productcategory/edit";
 	}
 
 	@RequestMapping("/detail_{id}")
 	public String detail(Model model, @PathVariable String id) {
-		CustomerCategoryDetailResponse response = this.customerCategoryService.find(id);
+		ProductCategoryDetailResponse response = this.productCategoryService.find(id);
 		model.addAttribute("vm", response);
-		return "customercategory/detail";
+		return "productcategory/detail";
 	}
 }

@@ -1,22 +1,16 @@
 package com.easysoft.sma.domain.dto;
 
-public class CustomerCategoryUpdateRequest {
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
-	private String id;
+public class ProductCategoryAddRequest {
 
+	@NotBlank(message = "{name}{validator_required}")
+	@Size(max = 40, message = "{name}{validator_max_length}")
 	private String name;
-
-	private String status;
-
+	
+	@Size(max = 512, message = "{remark}{validator_max_length}")
 	private String remark;
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
 
 	public String getName() {
 		return name;
@@ -26,14 +20,6 @@ public class CustomerCategoryUpdateRequest {
 		this.name = name;
 	}
 
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-	
 	public String getRemark() {
 		return remark;
 	}

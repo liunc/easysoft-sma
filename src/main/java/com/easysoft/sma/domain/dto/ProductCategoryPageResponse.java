@@ -2,11 +2,11 @@ package com.easysoft.sma.domain.dto;
 
 import org.springframework.data.domain.Sort;
 
-import com.easysoft.sma.domain.entity.QCustomerCategory;
+import com.easysoft.sma.domain.entity.QProductCategory;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQuery;
 
-public class CustomerCategoryPageResponse {
+public class ProductCategoryPageResponse {
 
 	private String id;
 
@@ -48,7 +48,7 @@ public class CustomerCategoryPageResponse {
 		this.remark = remark;
 	}
 
-	public static void setOrder(JPAQuery<CustomerCategoryPageResponse> query, QCustomerCategory qcc, Sort sort) {
+	public static void setOrder(JPAQuery<ProductCategoryPageResponse> query, QProductCategory qcc, Sort sort) {
 
 		for (Sort.Order o : sort) {
 
@@ -62,7 +62,7 @@ public class CustomerCategoryPageResponse {
 
 	}
 
-	private static OrderSpecifier<?> orderByAsc(QCustomerCategory qcc, String property) {
+	private static OrderSpecifier<?> orderByAsc(QProductCategory qcc, String property) {
 		OrderSpecifier<?> spec = null;
 		switch (property) {
 
@@ -81,7 +81,7 @@ public class CustomerCategoryPageResponse {
 		return spec;
 	}
 
-	private static OrderSpecifier<?> orderByDesc(QCustomerCategory qcc, String property) {
+	private static OrderSpecifier<?> orderByDesc(QProductCategory qcc, String property) {
 		OrderSpecifier<?> spec = null;
 		switch (property) {
 

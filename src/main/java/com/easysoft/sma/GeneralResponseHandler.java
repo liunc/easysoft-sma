@@ -45,7 +45,7 @@ public class GeneralResponseHandler implements ResponseBodyAdvice<Object> {
 		}
 
 		GeneralResponse result = new GeneralResponse();
-		result.success(200, "OK", serverHttpRequest.getURI().getPath(), body);
+		result.success(200, "OK", serverHttpRequest.getURI().getPath(), serverHttpRequest.getMethodValue(), body);
 		return result;
 	}
 
@@ -59,7 +59,7 @@ public class GeneralResponseHandler implements ResponseBodyAdvice<Object> {
 		}
 
 		GeneralResponse result = new GeneralResponse();
-		result.fail(status.value(), status.name(), ex.getMessage(), request.getPathInfo());
+		result.fail(status.value(), status.name(), ex.getMessage(), request.getRequestURI(), request.getMethod());
 		return result;
 	}
 
@@ -76,7 +76,7 @@ public class GeneralResponseHandler implements ResponseBodyAdvice<Object> {
 		}
 
 		GeneralResponse result = new GeneralResponse();
-		result.fail(400, "Bad Request", String.join(",", errorMessage), request.getPathInfo());
+		result.fail(400, "Bad Request", String.join(",", errorMessage), request.getRequestURI(), request.getMethod());
 		return result;
 	}
 
@@ -87,7 +87,7 @@ public class GeneralResponseHandler implements ResponseBodyAdvice<Object> {
 	public GeneralResponse errorHandler(HttpServletRequest request, BusinessException ex) {
 
 		GeneralResponse result = new GeneralResponse();
-		result.fail(ex.getCode(), ex.getText(), ex.getMessage(), request.getPathInfo());
+		result.fail(ex.getCode(), ex.getText(), ex.getMessage(), request.getRequestURI(), request.getMethod());
 		return result;
 	}
 
@@ -97,7 +97,7 @@ public class GeneralResponseHandler implements ResponseBodyAdvice<Object> {
 	public GeneralResponse errorHandler(HttpServletRequest request, ConflictException ex) {
 
 		GeneralResponse result = new GeneralResponse();
-		result.fail(ex.getCode(), ex.getText(), ex.getMessage(), request.getPathInfo());
+		result.fail(ex.getCode(), ex.getText(), ex.getMessage(), request.getRequestURI(), request.getMethod());
 		return result;
 	}
 

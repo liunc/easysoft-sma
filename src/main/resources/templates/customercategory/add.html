@@ -94,7 +94,8 @@
 					contentType : 'application/json',
 					cache : false,
 					datatype : 'json',
-					success : function(json) {
+					complete: function (xhr) {
+						var json = JSON.parse(xhr.responseText);
 						if (json.success) {
 							$('#table_list').bootstrapTable('refresh');
 							$('#btn_add_close').click();
