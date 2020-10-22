@@ -121,7 +121,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 	public PageResponse<ProductCategoryPageResponse> page(Pageable pageable, ProductCategoryPageRequest request) {
 		QProductCategory cc = QProductCategory.productCategory;
 		JPAQuery<ProductCategoryPageResponse> query = jpaQueryFactory
-				.select(Projections.bean(ProductCategoryPageResponse.class, cc.id, cc.name, cc.remark)).from(cc);
+				.select(Projections.bean(ProductCategoryPageResponse.class, cc.id, cc.name, cc.status, cc.remark)).from(cc);
 
 		if (request != null) {
 			if (StringUtils.hasText(request.getName())) {

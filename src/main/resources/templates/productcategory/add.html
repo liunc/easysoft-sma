@@ -1,7 +1,7 @@
 <div class="modal-header" xmlns:th="http://www.thymeleaf.org">
 	<button type="button" class="close" data-dismiss="modal"
 		aria-hidden="true"></button>
-	<h4 class="modal-title" th:text="#{add_customer_category}"></h4>
+	<h4 class="modal-title" th:text="#{add_product_category}"></h4>
 </div>
 <div class="modal-body" xmlns:th="http://www.thymeleaf.org">
 	<div class="row">
@@ -10,7 +10,7 @@
 				<div class="form-body">
 
 					<div id="add_category_alert"></div>
-					
+
 					<div class="form-group">
 						<label class="control-label col-md-3"> <span
 							th:text="#{name}"></span><span class="required">
@@ -88,7 +88,7 @@
 				request.remark = $.trim($('#add_remark').val());
 
 				$.ajax({
-					url : '/api/customer-categories',
+					url : '/api/product-categories',
 					type : 'POST',
 					data : JSON.stringify(request),
 					contentType : 'application/json',
@@ -100,11 +100,12 @@
 							$('#table_list').bootstrapTable('refresh');
 							$('#btn_add_close').click();
 						} else {
+                            var message = /*[[#{ add_failed }]]*/ 'add_failed';
 							App.alert({
 								container : '#add_category_alert',
 								place : 'append',
 								type : 'danger',
-								message : 'add_failed' + json.message,
+								message : message +　json.message,
 								close : true,
 								reset : true,
 								focus : true,
