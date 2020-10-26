@@ -29,9 +29,6 @@ public class ProductUpdateRequest {
 	@Size(max = 20, message = "{support_delivery_mode}{validator_max_length}")
 	private String supportDeliveryMode;
 
-	@NotBlank(message = "{status}{validator_required}")
-	private String status;
-
 	@Size(max = 512, message = "{remark}{validator_max_length}")
 	private String remark;
 
@@ -81,14 +78,6 @@ public class ProductUpdateRequest {
 
 	public void setSupportDeliveryMode(String supportDeliveryMode) {
 		this.supportDeliveryMode = supportDeliveryMode;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
 	}
 
 	public String getRemark() {

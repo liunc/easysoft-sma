@@ -5,10 +5,12 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.easysoft.lib.common.exception.BadRequestException;
 import com.easysoft.lib.common.exception.BusinessException;
 import com.easysoft.lib.common.exception.ConflictException;
+import com.easysoft.lib.common.exception.NotFoundException;
 import com.easysoft.lib.jdb.domain.dto.GeneralResponse;
-import com.easysoft.sma.ui.model.BootstrapTableResponse;
+import com.easysoft.lib.jdb.domain.dto.PageResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,10 +39,11 @@ public class GeneralResponseHandler implements ResponseBodyAdvice<Object> {
 	public Object beforeBodyWrite(Object body, MethodParameter methodParameter, MediaType mediaType,
 			Class<? extends HttpMessageConverter<?>> aClass, ServerHttpRequest serverHttpRequest,
 			ServerHttpResponse serverHttpResponse) {
+
 		if (body instanceof GeneralResponse) {
 			return body;
 		}
-		if (body instanceof BootstrapTableResponse) {
+		if (body instanceof PageResponse) {
 			return body;
 		}
 
@@ -52,6 +55,7 @@ public class GeneralResponseHandler implements ResponseBodyAdvice<Object> {
 	@ExceptionHandler(value = Exception.class)
 	@ResponseBody
 	public GeneralResponse defaultErrorHandler(HttpServletRequest request, Exception ex) throws Exception {
+		
 		logger.error("", ex);
 		HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 		if (ex instanceof org.springframework.web.servlet.NoHandlerFoundException) {
@@ -85,6 +89,26 @@ public class GeneralResponseHandler implements ResponseBodyAdvice<Object> {
 	@ExceptionHandler(value = BusinessException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public GeneralResponse errorHandler(HttpServletRequest request, BusinessException ex) {
+
+		GeneralResponse result = new GeneralResponse();
+		result.fail(ex.getCode(), ex.getText(), ex.getMessage(), request.getRequestURI(), request.getMethod());
+		return result;
+	}
+
+	@ResponseBody
+	@ExceptionHandler(value = BadRequestException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public GeneralResponse errorHandler(HttpServletRequest request, BadRequestException ex) {
+
+		GeneralResponse result = new GeneralResponse();
+		result.fail(ex.getCode(), ex.getText(), ex.getMessage(), request.getRequestURI(), request.getMethod());
+		return result;
+	}
+
+	@ResponseBody
+	@ExceptionHandler(value = NotFoundException.class)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public GeneralResponse errorHandler(HttpServletRequest request, NotFoundException ex) {
 
 		GeneralResponse result = new GeneralResponse();
 		result.fail(ex.getCode(), ex.getText(), ex.getMessage(), request.getRequestURI(), request.getMethod());

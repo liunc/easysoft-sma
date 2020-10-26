@@ -1,6 +1,5 @@
 package com.easysoft.sma.domain.service;
 
-import java.util.List;
 
 import com.easysoft.lib.common.exception.BusinessException;
 import com.easysoft.lib.jdb.domain.dto.PageResponse;
@@ -18,11 +17,11 @@ public interface ProductService {
 
 	public void update(ProductUpdateRequest request) throws BusinessException;
 
+	public void changeStatus(String id) throws BusinessException;
+
 	public void delete(String id) throws BusinessException;
 
 	public ProductDetailResponse find(String id) throws BusinessException;
-
-	public List<ProductPageResponse> findAvailable();
 
 	public PageResponse<ProductPageResponse> page(Pageable pageable, ProductPageRequest request);
 }

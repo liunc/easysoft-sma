@@ -34,38 +34,44 @@ public class ProductCategoryRestController {
 	@Autowired
 	private ProductCategoryService productCategoryService;
 
-	@ApiOperation("获取所有数据")
-	@RequestMapping(method = RequestMethod.GET)
-	public List<TextValueObject> getAll() {
-		return this.productCategoryService.findAll();
+	@ApiOperation("根据状态获取产品分类数据")
+	@RequestMapping(value = "/{status}", method = RequestMethod.GET)
+	public List<TextValueObject> getCategory(@PathVariable String status) {
+		return this.productCategoryService.findAll(status);
 	}
 
-	@ApiOperation("按Id获取某条数据")
+	@ApiOperation("根据Id获取某条产品分类数据")
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ProductCategoryDetailResponse getOne(@PathVariable String id) throws BusinessException {
 		return this.productCategoryService.find(id);
 	}
 
-	@ApiOperation("分页获取所有数据")
-	@RequestMapping(value = "/", method = RequestMethod.GET)
+	@ApiOperation("分页获取产品分类数据")
+	@RequestMapping(method = RequestMethod.GET)
 	public PageResponse<ProductCategoryPageResponse> page(@PageableDefault Pageable pageable,
 			ProductCategoryPageRequest request) {
 		return this.productCategoryService.page(pageable, request);
 	}
 
-	@ApiOperation("新增数据")
+	@ApiOperation("新增产品分类数据")
 	@RequestMapping(method = RequestMethod.POST)
 	public void add(@RequestBody @Valid ProductCategoryAddRequest request) throws BusinessException {
 		 this.productCategoryService.add(request);
 	}
 
-	@ApiOperation("更新数据")
+	@ApiOperation("根据Id更新产品分类数据")
 	@RequestMapping(method = RequestMethod.PUT)
 	public void update(@RequestBody ProductCategoryUpdateRequest request) throws BusinessException {
 		this.productCategoryService.update(request);
 	}
 
-	@ApiOperation("删除数据")
+	@ApiOperation("根据Id更新产品分类状态")
+	@RequestMapping(value="/{id}", method = RequestMethod.PATCH)
+	public void changeStatus(@PathVariable String id) throws BusinessException {
+		this.productCategoryService.changeStatus(id);
+	}
+
+	@ApiOperation("根据Id删除产品分类数据")
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public void delete(@PathVariable String id) throws BusinessException {
 		this.productCategoryService.delete(id);

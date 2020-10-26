@@ -12,9 +12,6 @@
 					<div id="edit_category_alert"></div>
 
 					<input type="hidden" id="edit_id" name="edit_id" th:value="${vm.id}" />
-					<input type="hidden"
-						id="edit_status_value" name="edit_status_value"
-							th:value="${vm.status}" />
 
 					<div class="form-group">
 						<label class="control-label col-md-3"> <span
@@ -33,10 +30,10 @@
 							th:text="#{status}"></span>
 						</label>
 						<div class="col-md-6">
-							<select id="edit_status" name="edit_status" class="form-control input-sm">
-								<option value="1" th:text="#{yes}" />
-								<option value="0" th:text="#{no}" />
-							</select>
+							<span class="form-control-static" th:if="${vm.status} == '1'"
+								th:text="#{yes}"></span> <span
+								class="form-control-static" th:if="${vm.status} == '0'"
+								th:text="#{no}"></span>
 						</div>
 						<div class="col-md-3"></div>
 					</div>
@@ -71,8 +68,6 @@
 
 	$(function() {
 
-		$('#edit_status').val($('#edit_status_value').val());
-
 		$('#edit_category_form').validate({
 			errorElement : 'span',
 			errorClass : 'help-block help-block-error',
@@ -82,9 +77,6 @@
 				edit_name : {
 					required : true,
 					maxlength : 40
-				},
-				edit_status : {
-							required : true
 				},
 				edit_remark : {
 					maxlength : 512
@@ -109,7 +101,6 @@
 				var request = {};
 				request.id = $.trim($('#edit_id').val());
 				request.name = $.trim($('#edit_name').val());
-				request.status = $.trim($('#edit_status').val());
 				request.remark = $.trim($('#edit_remark').val());
 
 				$.ajax({

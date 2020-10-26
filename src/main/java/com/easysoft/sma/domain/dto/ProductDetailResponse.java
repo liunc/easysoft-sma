@@ -3,7 +3,6 @@ package com.easysoft.sma.domain.dto;
 import java.math.BigDecimal;
 
 import com.easysoft.lib.jdb.domain.dto.DetailResponse;
-import com.easysoft.sma.domain.entity.Product;
 
 public class ProductDetailResponse extends DetailResponse {
 
@@ -107,20 +106,20 @@ public class ProductDetailResponse extends DetailResponse {
         this.remark = remark;
     }
 
-    public ProductDetailResponse() {
-    }
+    // public ProductDetailResponse() {
+    // }
 
-    public ProductDetailResponse(Product entity, String categoryName) {
-        super(entity.getId(), entity.getCreater(), entity.getCreateTime(), entity.getUpdater(), entity.getUpdateTime());
-        this.categoryName = categoryName;
-        this.salesYear = entity.getSalesYear();
-        this.name = entity.getName();
-        this.price = entity.getPrice();
-        this.packUnit = entity.getPackUnit();
-        this.spec = entity.getSpec();
-        this.specUnit = entity.getSpecUnit();
-        this.status = entity.getStatus();
-        this.remark = entity.getRemark();
-        this.supportDeliveryMode = entity.getSupportDeliveryMode();
-    }
+    // public ProductDetailResponse(Product entity, String categoryName) {
+    //     super(entity.getId(), entity.getCreater(), entity.getCreateTime(), entity.getUpdater(), entity.getUpdateTime());
+    //     this.categoryName = categoryName;
+    //     this.salesYear = entity.getSalesYear();
+    //     this.name = entity.getName();
+    //     this.price = entity.getPrice();
+    //     this.packUnit = entity.getPackUnit();
+    //     this.spec = entity.getSpec();
+    //     this.specUnit = entity.getSpecUnit();
+    //     this.status = entity.getStatus();
+    //     this.remark = entity.getRemark();
+    //     this.supportDeliveryMode = entity.getSupportDeliveryMode();
+    // }
 }

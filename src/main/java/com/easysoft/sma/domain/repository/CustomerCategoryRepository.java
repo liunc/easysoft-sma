@@ -1,9 +1,10 @@
 package com.easysoft.sma.domain.repository;
 
-import com.easysoft.lib.jdb.domain.repository.BaseRepository;
 import com.easysoft.sma.domain.entity.CustomerCategory;
 
-public interface CustomerCategoryRepository extends BaseRepository<CustomerCategory, String> {
+import org.springframework.data.repository.CrudRepository;
+
+public interface CustomerCategoryRepository extends CrudRepository<CustomerCategory, String> {
 
 	public boolean existsByName(String name);
 

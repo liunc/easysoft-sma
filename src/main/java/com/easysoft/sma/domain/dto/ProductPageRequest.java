@@ -1,12 +1,12 @@
 package com.easysoft.sma.domain.dto;
 
 public class ProductPageRequest {
-    private String categoryId;
-	
+	private String categoryId;
+
 	private int salesYear;
-	
+
 	private String name;
-	
+
 	private String status;
 
 	/**
@@ -64,4 +64,15 @@ public class ProductPageRequest {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+
+	public ProductPageRequest(String categoryId, int salesYear, String name, String status) {
+		this.categoryId = categoryId;
+		this.salesYear = salesYear;
+		this.name = name;
+		this.status = status;
+	}
+
+	public ProductPageRequest() {
+	}
+
 }

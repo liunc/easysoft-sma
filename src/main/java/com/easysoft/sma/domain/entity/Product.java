@@ -111,7 +111,7 @@ public class Product extends BaseEntity {
 		this.remark = remark;
 	}
 
-	public void change() {
+	public void changeStatus() {
 		if (ZeroOne.ONE.equals(this.status)) {
 			this.status = ZeroOne.ZERO;
 			return;

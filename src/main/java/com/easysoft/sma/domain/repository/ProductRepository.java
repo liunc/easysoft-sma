@@ -2,10 +2,11 @@ package com.easysoft.sma.domain.repository;
 
 import java.util.List;
 
-import com.easysoft.lib.jdb.domain.repository.BaseRepository;
 import com.easysoft.sma.domain.entity.Product;
 
-public interface ProductRepository extends BaseRepository<Product, String> {
+import org.springframework.data.repository.CrudRepository;
+
+public interface ProductRepository extends CrudRepository<Product, String> {
 
 	public List<Product> findByStatusOrderByName(String status);
 	

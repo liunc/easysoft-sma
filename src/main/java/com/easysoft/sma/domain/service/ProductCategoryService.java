@@ -19,11 +19,13 @@ public interface ProductCategoryService {
 
 	public void update(ProductCategoryUpdateRequest request) throws BusinessException;
 
+	public void changeStatus(String id) throws BusinessException;
+
 	public void delete(String id) throws BusinessException;
 
 	public ProductCategoryDetailResponse find(String id) throws BusinessException;
 
-	public List<TextValueObject> findAll();
+	public List<TextValueObject> findAll(String status);
 
 	public PageResponse<ProductCategoryPageResponse> page(Pageable pageable, ProductCategoryPageRequest request);
 }
