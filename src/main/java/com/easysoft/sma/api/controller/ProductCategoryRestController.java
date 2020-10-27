@@ -2,11 +2,10 @@ package com.easysoft.sma.api.controller;
 
 import java.util.List;
 
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,18 +54,18 @@ public class ProductCategoryRestController {
 
 	@ApiOperation("新增产品分类数据")
 	@RequestMapping(method = RequestMethod.POST)
-	public void add(@RequestBody @Valid ProductCategoryAddRequest request) throws BusinessException {
-		 this.productCategoryService.add(request);
+	public void add(@RequestBody @Validated ProductCategoryAddRequest request) throws BusinessException {
+		this.productCategoryService.add(request);
 	}
 
 	@ApiOperation("根据Id更新产品分类数据")
 	@RequestMapping(method = RequestMethod.PUT)
-	public void update(@RequestBody ProductCategoryUpdateRequest request) throws BusinessException {
+	public void update(@RequestBody @Validated ProductCategoryUpdateRequest request) throws BusinessException {
 		this.productCategoryService.update(request);
 	}
 
 	@ApiOperation("根据Id更新产品分类状态")
-	@RequestMapping(value="/{id}", method = RequestMethod.PATCH)
+	@RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
 	public void changeStatus(@PathVariable String id) throws BusinessException {
 		this.productCategoryService.changeStatus(id);
 	}

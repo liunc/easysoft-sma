@@ -122,9 +122,9 @@ public class ProductServiceImpl implements ProductService {
                 .select(Projections.bean(ProductDetailResponse.class, p.id, pc.name.as("categoryName"), p.salesYear,
                         p.name, p.price, p.packUnit, p.spec, p.specUnit, p.supportDeliveryMode, p.status, p.remark))
                 .from(p).leftJoin(pc).on(p.categoryId.eq(pc.id));
-        query.where(pc.id.eq(id));
+        query.where(p.id.eq(id));
 
-        ProductDetailResponse response = query.fetchFirst();
+        ProductDetailResponse response = query.fetchOne();
         if (response == null) {
             throw new NotFoundException(this.messageSource.getMessage("data_not_found", new Object[] {
                     this.messageSource.getMessage("product"), this.messageSource.getMessage("id"), id }));

@@ -1,11 +1,9 @@
 package com.easysoft.sma.api.controller;
 
-
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,13 +45,13 @@ public class ProductRestController {
 
 	@ApiOperation("新增产品数据")
 	@RequestMapping(method = RequestMethod.POST)
-	public void add(@RequestBody @Valid ProductAddRequest request) throws BusinessException {
+	public void add(@RequestBody @Validated ProductAddRequest request) throws BusinessException {
 		 this.productService.add(request);
 	}
 
 	@ApiOperation("根据Id更新产品分类数据")
 	@RequestMapping(method = RequestMethod.PUT)
-	public void update(@RequestBody ProductUpdateRequest request) throws BusinessException {
+	public void update(@RequestBody @Validated ProductUpdateRequest request) throws BusinessException {
 		this.productService.update(request);
 	}
 

@@ -1,0 +1,264 @@
+<div class="modal-header" xmlns:th="http://www.thymeleaf.org">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+	<h4 class="modal-title" th:text="#{edit_product}"></h4>
+</div>
+<div class="modal-body" xmlns:th="http://www.thymeleaf.org">
+	<div class="row">
+		<div class="col-md-12">
+			<form id="edit_product_form" action="#" class="form-horizontal">
+				<div class="form-body">
+
+					<div id="edit_product_alert"></div>
+
+					<input type="hidden" id="edit_id" name="edit_id" th:value="${vm.id}" />
+					<input type="hidden" id="edit_support_delivery_mode_value" name="edit_support_delivery_mode_value"
+						th:value="${vm.supportDeliveryMode}" />
+
+					<div class="form-group">
+						<label class="control-label col-md-3"> <span th:text="#{product_category}"></span>
+						</label>
+						<div class="col-md-6">
+							<span class="form-control-static" th:text="${categoryName}"></span>
+						</div>
+						<div class="col-md-3">
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="control-label col-md-3"> <span th:text="#{sales_year}"></span>
+						</label>
+						<div class="col-md-6">
+							<span class="form-control-static" th:text="${vm.salesYear} + #{year}"></span>
+						</div>
+						<div class="col-md-3">
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="control-label col-md-3"> <span th:text="#{name}"></span>
+						</label>
+						<div class="col-md-6">
+							<span class="form-control-static" th:text="${vm.name}"></span>
+						</div>
+						<div class="col-md-3"></div>
+					</div>
+
+					<div class="form-group">
+						<label class="control-label col-md-3"> <span th:text="#{pack_unit}"></span><span
+								class="required">
+								* </span>
+						</label>
+						<div class="col-md-6">
+							<input type="text" id="edit_pack_unit" name="edit_pack_unit" class="form-control input-sm"
+								th:value="${vm.packUnit}" />
+						</div>
+						<div class="col-md-3"></div>
+					</div>
+
+					<div class="form-group">
+						<label class="control-label col-md-3"> <span th:text="#{price}"></span><span class="required">
+								* </span>
+						</label>
+						<div class="col-md-6">
+							<div class="input-group input-group-sm">
+								<input type="text" id="edit_price" name="edit_price" class="form-control"
+									th:value="${vm.price}" aria-describedby="sizing-addon1" />
+								<span class="input-group-addon" id="sizing-addon1" th:text="#{yuan}"></span>
+							</div>
+						</div>
+						<div class="col-md-3"></div>
+					</div>
+
+					<div class="form-group">
+						<label class="control-label col-md-3"> <span th:text="#{spec}"></span><span class="required">
+								* </span>
+						</label>
+						<div class="col-md-6">
+							<input type="text" id="edit_spec" name="edit_spec" class="form-control input-sm"
+								th:value="${vm.spec}" />
+						</div>
+						<div class="col-md-3"></div>
+					</div>
+
+					<div class="form-group">
+						<label class="control-label col-md-3"> <span th:text="#{spec_unit}"></span><span
+								class="required">
+								* </span>
+						</label>
+						<div class="col-md-6">
+							<input type="text" id="edit_spec_unit" name="edit_spec_unit" class="form-control input-sm"
+								th:value="${vm.specUnit}" />
+						</div>
+						<div class="col-md-3"></div>
+					</div>
+
+					<div class="form-group">
+						<label class="control-label col-md-3"> <span th:text="#{support_delivery_mode}"></span><span
+								class="required">
+								* </span>
+						</label>
+						<div class="col-md-6">
+							<label class="checkbox-inline" th:each="mode:${deliveryModes}">
+								<input type="checkbox" name="edit_support_delivery_mode" th:value="${mode.key}" />
+								<span th:text="${mode.value}"></span>
+							</label>
+						</div>
+						<div class="col-md-3"></div>
+					</div>
+
+					<div class="form-group">
+						<label class="control-label col-md-3"> <span th:text="#{status}"></span>
+						</label>
+						<div class="col-md-6">
+							<span class="form-control-static" th:if="${vm.status} == '1'"
+								th:text="#{yes}"></span> <span
+								class="form-control-static" th:if="${vm.status} == '0'"
+								th:text="#{no}"></span>
+						</div>
+						<div class="col-md-3"></div>
+					</div>
+
+					<div class="form-group">
+						<label class="control-label col-md-3"> <span th:text="#{remark}"></span>
+						</label>
+						<div class="col-md-6">
+							<textarea class="form-control input-sm" id="edit_remark" name="edit_remark"
+								th:text="${vm.remark}"></textarea>
+						</div>
+						<div class="col-md-3"></div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<div class="modal-footer" xmlns:th="http://www.thymeleaf.org">
+	<button type="button" id="btn_edit_close" class="btn default" data-dismiss="modal">
+		<i class="fa fa-close"></i> <span th:text="#{close}"></span>
+	</button>
+	<button type="button" id="btn_edit_submit" class="btn blue">
+		<i class="fa fa-check"></i> <span th:text="#{submit}"></span>
+	</button>
+</div>
+
+<script type="text/javascript" th:inline="javascript">
+	/*<![CDATA[*/
+
+	$(function () {
+
+		var suportDeliveryMode = $('#edit_support_delivery_mode_value').val();
+		var arr = suportDeliveryMode.split(',');
+		for (var i = 0; i < arr.length; i++) {
+			$.each($('input[name="edit_support_delivery_mode"]'), function () {
+				if ($(this).val() == arr[i]) {
+					$(this).attr("checked", "checked");
+				}
+			});
+		}
+
+		$('#edit_product_form').validate({
+			errorElement: 'span',
+			errorClass: 'help-block help-block-error',
+			focusInvalid: false,
+			ignore: '',
+			rules: {
+				edit_id: {
+					required: true
+				},
+				edit_sales_year: {
+					required: true
+				},
+				edit_pack_unit: {
+					required: true,
+					maxlength: 10
+				},
+				edit_price: {
+					required: true,
+					number: true,
+					min: 0
+				},
+				edit_spec: {
+					required: true,
+					number: true,
+					min: 0
+				},
+				edit_spec_unit: {
+					required: true,
+					maxlength: 10
+				},
+				edit_support_delivery_mode: {
+					required: true
+				},
+				edit_remark: {
+					maxlength: 512
+				}
+			},
+			messages: {},
+			invalidHandler: function (e, t) {
+			},
+			errorPlacement: function (e, r) {
+				r.parents("div:first").next().html(e)
+			},
+			highlight: function (e) {
+				$(e).closest(".form-group").addClass("has-error")
+			},
+			unhighlight: function (e) {
+				$(e).closest(".form-group").removeClass("has-error")
+			},
+			success: function (e) {
+				e.closest(".form-group").removeClass("has-error")
+			},
+			submitHandler: function (e) {
+
+				var request = {};
+				request.id = $.trim($('#edit_id').val());
+				request.packUnit = $.trim($('#edit_pack_unit').val());
+				request.price = Number.parseFloat($.trim($('#edit_price').val()));
+				request.spec = Number.parseFloat($.trim($('#edit_spec').val()));
+				request.specUnit = $.trim($('#edit_spec_unit').val());
+
+				var supportDeliveryMode = new Array();
+				$.each($('input[name="edit_support_delivery_mode"]:checked'), function () {
+					supportDeliveryMode.push($(this).val());
+
+				});
+				request.supportDeliveryMode = supportDeliveryMode.join(',');
+				request.remark = $.trim($('#edit_remark').val());
+
+				$.ajax({
+					url: '/api/products',
+					type: 'PUT',
+					data: JSON.stringify(request),
+					contentType: 'application/json',
+					cache: false,
+					datatype: 'json',
+					complete: function (xhr) {
+						var json = JSON.parse(xhr.responseText);
+						if (json.success) {
+							$('#table_list').bootstrapTable('refresh');
+							$('#btn_edit_close').click();
+						} else {
+							var message = /*[[#{ edit_failed }]]*/ 'edit_failed';
+							App.alert({
+								container: '#edit_product_alert',
+								place: 'append',
+								type: 'danger',
+								message: message + json.message,
+								close: true,
+								reset: true,
+								focus: true,
+								closeInSeconds: 5
+							});
+						}
+					}
+				});
+			}
+		})
+
+		$('#btn_edit_submit').click(function () {
+			$('#edit_product_form').submit();
+		})
+	});
+
+	/*]]>*/
+</script>

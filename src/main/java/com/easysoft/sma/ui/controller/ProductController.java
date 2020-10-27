@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.easysoft.lib.common.LocalMessageSource;
 import com.easysoft.lib.jdb.domain.dto.TextValueObject;
+import com.easysoft.lib.jdb.domain.valueobject.ZeroOne;
 import com.easysoft.sma.domain.dto.ProductDetailResponse;
 import com.easysoft.sma.domain.service.ProductCategoryService;
 import com.easysoft.sma.domain.service.ProductService;
@@ -48,7 +49,7 @@ public class ProductController {
     @RequestMapping("/index")
     public String index(Model model) {
 
-        List<TextValueObject> categories = this.productCategoryService.findAll("");
+        List<TextValueObject> categories = this.productCategoryService.findAll(ZeroOne.ONE);
         model.addAttribute("categories", categories);
 
         model.addAttribute("salesYears", this.builderSalesYears());
