@@ -7,6 +7,7 @@ import java.util.List;
 import com.easysoft.lib.common.LocalMessageSource;
 import com.easysoft.lib.jdb.domain.dto.TextValueObject;
 import com.easysoft.lib.jdb.domain.valueobject.ZeroOne;
+import com.easysoft.sma.domain.dto.ProductCategoryDetailResponse;
 import com.easysoft.sma.domain.dto.ProductDetailResponse;
 import com.easysoft.sma.domain.service.ProductCategoryService;
 import com.easysoft.sma.domain.service.ProductService;
@@ -47,7 +48,7 @@ public class ProductController {
     }
 
     @RequestMapping("/index")
-    public String index(Model model) {
+    public String getProductIndex(Model model) {
 
         List<TextValueObject> categories = this.productCategoryService.findAll(ZeroOne.ONE);
         model.addAttribute("categories", categories);
@@ -64,14 +65,14 @@ public class ProductController {
     }
 
     @RequestMapping("/add")
-	public String add(Model model) {
+	public String getProductAdd(Model model) {
 
 		logger.info("product add.");
 		return "product/add";
 	}
 
 	@RequestMapping("/edit_{id}")
-	public String edit(Model model, @PathVariable String id) {
+	public String getProductEdit(Model model, @PathVariable String id) {
 		
 		ProductDetailResponse response = this.productService.find(id);
 		model.addAttribute("vm", response);
@@ -79,10 +80,39 @@ public class ProductController {
 	}
 
 	@RequestMapping("/detail_{id}")
-	public String detail(Model model, @PathVariable String id) {
+	public String getProductDetail(Model model, @PathVariable String id) {
 		ProductDetailResponse response = this.productService.find(id);
 		model.addAttribute("vm", response);
 		return "product/detail";
+	}
+	
+	@RequestMapping("/index")
+	public String getProductCategoryIndex(Model model) {
+
+		logger.info("product category index.");
+		return "product/category_index";
+	}
+
+	@RequestMapping("/category_add")
+	public String getProductCategoryAdd(Model model) {
+
+		logger.info("product category add.");
+		return "product/category_add";
+	}
+
+	@RequestMapping("/category_edit_{id}")
+	public String getProductCategoryEdit(Model model, @PathVariable String id) {
+		
+		ProductCategoryDetailResponse response = this.productCategoryService.find(id);
+		model.addAttribute("vm", response);
+		return "product/category_edit";
+	}
+
+	@RequestMapping("/category_detail_{id}")
+	public String getProductCategoryDetail(Model model, @PathVariable String id) {
+		ProductCategoryDetailResponse response = this.productCategoryService.find(id);
+		model.addAttribute("vm", response);
+		return "product/category_detail";
 	}
 
 }

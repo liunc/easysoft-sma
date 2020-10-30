@@ -48,9 +48,8 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 	private ProductCategory findById(String id) throws NotFoundException {
 
 		return this.productCategoryRepository.findById(id)
-				.orElseThrow(() -> new NotFoundException(this.messageSource.getMessage("data_not_found",
-						new Object[] { this.messageSource.getMessage("product_category"),
-								this.messageSource.getMessage("id"), id })));
+				.orElseThrow(() -> new NotFoundException(this.messageSource.getMessage("data_not_found", new Object[] {
+						this.messageSource.getMessage("product_category"), this.messageSource.getMessage("id"), id })));
 	}
 
 	private void hasSameName(String name) throws ConflictException {
@@ -59,7 +58,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 					this.messageSource.getMessage("product_category"), this.messageSource.getMessage("name"), name }));
 		}
 	}
-	
+
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public void add(ProductCategoryAddRequest request) throws BusinessException {
@@ -69,7 +68,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 		ProductCategory entity = new ProductCategory();
 		entity.create(request.getName(), request.getRemark());
 		this.productCategoryRepository.save(entity);
-		
+
 	}
 
 	@Override
@@ -84,7 +83,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
 		entity.update(name, request.getRemark());
 		this.productCategoryRepository.save(entity);
-		
+
 	}
 
 	@Override
@@ -94,7 +93,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 		ProductCategory entity = this.findById(id);
 		entity.changeStatus();
 		this.productCategoryRepository.save(entity);
-		
+
 	}
 
 	@Override
@@ -112,7 +111,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 		}
 
 		this.productCategoryRepository.deleteById(id);
-		
+
 	}
 
 	@Override
@@ -126,21 +125,23 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 
 		QProductCategory pc = QProductCategory.productCategory;
 
-        JPAQuery<TextValueObject> query = jpaQueryFactory
-                .select(Projections.bean(TextValueObject.class, pc.id.as("value"), pc.name.as("text"))).from(pc);
+		JPAQuery<TextValueObject> query = jpaQueryFactory
+				.select(Projections.bean(TextValueObject.class, pc.id.as("value"), pc.name.as("text"))).from(pc);
 
-        if (StringUtils.hasText(status)) {
-            query.where(pc.status.eq(status));
-        }
-        return query.orderBy(pc.name.asc()).fetch();
+		if (StringUtils.hasText(status)) {
+			query.where(pc.status.eq(status));
+		}
+		return query.orderBy(pc.name.asc()).fetch();
 	}
 
 	@Override
 	public PageResponse<ProductCategoryPageResponse> page(Pageable pageable, ProductCategoryPageRequest request) {
-		
+
 		QProductCategory pc = QProductCategory.productCategory;
 		JPAQuery<ProductCategoryPageResponse> query = jpaQueryFactory
-				.select(Projections.bean(ProductCategoryPageResponse.class, pc.id, pc.name, pc.status, pc.remark)).from(pc);
+				.select(Projections.bean(ProductCategoryPageResponse.class, pc.id, pc.name, pc.status, pc.remark,
+						pc.creater, pc.createTime, pc.updater, pc.updateTime))
+				.from(pc);
 
 		if (request != null) {
 			if (StringUtils.hasText(request.getName())) {

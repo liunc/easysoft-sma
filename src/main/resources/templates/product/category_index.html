@@ -44,7 +44,7 @@
 							<button id="btn_search" class="btn btn-success btn-sm">
 								<i class="fa fa-search"></i> <span th:text="#{search}"></span>
 							</button>
-							<a th:href="@{/product-category/add}" data-target="#modal_category" data-toggle="modal"
+							<a th:href="@{/product/category_add}" data-target="#modal_category" data-toggle="modal"
 								class="btn btn-info btn-sm">
 								<i class="fa fa-plus"></i> <span class="hidden-xs" th:text="#{add}"></span>
 							</a>
@@ -88,7 +88,7 @@
 			highlightCurrentUrl();
 
 			$('#table_list').bootstrapTable({
-				url: '/api/product-categories/',
+				url: '/api/products/categories/',
 				method: 'get',
 				pagination: true,
 				sortable: true,
@@ -101,7 +101,7 @@
 				queryParams: function (params) {
 					return {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
 						size: params.limit,   //页面大小
-						page: params.offset,  //页码
+						page: params.offset / params.limit,  //页码
 						sort: params.sort + ',' + params.order,
 						name: $.trim($('#query_name').val()),
 						status: $.trim($('#query_status').val())
@@ -149,7 +149,7 @@
 		});
 
 		function nameFormatter(value, row, index) {
-			return '<a href="/product-category/detail_' + row.id + '" data-target="#modal_category" data-toggle="modal" >'
+			return '<a href="/product/category_detail_' + row.id + '" data-target="#modal_category" data-toggle="modal" >'
 				+ value + '</a>';
 		}
 
@@ -169,7 +169,7 @@
 		}
 
 		function operateFormatter(value, row, index) {
-			return '<a href="/product-category/edit_' + row.id + '" data-target="#modal_category" data-toggle="modal" class="btn btn-circle btn-icon-only btn-default" title="' + /*[[#{ edit }]]*/ 'edit'
+			return '<a href="/product/category_edit_' + row.id + '" data-target="#modal_category" data-toggle="modal" class="btn btn-circle btn-icon-only btn-default" title="' + /*[[#{ edit }]]*/ 'edit'
 				+ '"><i class="fa fa-pencil"></i></a>'
 				+ '<a href="javascript:;" class="btn btn-circle btn-icon-only btn-default" onclick="deleteCategory(\'' + row.id + '\')" title="' + /*[[#{ delete}]]*/ 'delete'
 				+ '"><i class="fa fa-remove"></i></a>';
@@ -180,7 +180,7 @@
 				return;
 			}
 			$.ajax({
-				url: '/api/product-categories/' + id,
+				url: '/api/products/categories/' + id,
 				type: 'PATCH',
 				contentType: 'application/json',
 				cache: false,
@@ -215,7 +215,7 @@
 				return;
 			}
 			$.ajax({
-				url: '/api/product-categories/' + id,
+				url: '/api/products/categories/' + id,
 				type: 'DELETE',
 				contentType: 'application/json',
 				cache: false,

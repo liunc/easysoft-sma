@@ -120,7 +120,8 @@ public class ProductServiceImpl implements ProductService {
         QProductCategory pc = QProductCategory.productCategory;
         JPAQuery<ProductDetailResponse> query = jpaQueryFactory
                 .select(Projections.bean(ProductDetailResponse.class, p.id, pc.name.as("categoryName"), p.salesYear,
-                        p.name, p.price, p.packUnit, p.spec, p.specUnit, p.supportDeliveryMode, p.status, p.remark))
+                        p.name, p.price, p.packUnit, p.spec, p.specUnit, p.supportDeliveryMode, p.status, p.remark,
+                        p.creater, p.createTime, p.updater, p.updateTime))
                 .from(p).leftJoin(pc).on(p.categoryId.eq(pc.id));
         query.where(p.id.eq(id));
 

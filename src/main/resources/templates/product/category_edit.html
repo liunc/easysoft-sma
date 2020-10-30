@@ -1,15 +1,17 @@
 <div class="modal-header" xmlns:th="http://www.thymeleaf.org">
 	<button type="button" class="close" data-dismiss="modal"
 		aria-hidden="true"></button>
-	<h4 class="modal-title" th:text="#{add_product_category}"></h4>
+	<h4 class="modal-title" th:text="#{edit_product_category}"></h4>
 </div>
 <div class="modal-body" xmlns:th="http://www.thymeleaf.org">
 	<div class="row">
 		<div class="col-md-12">
-			<form id="add_category_form" action="#" class="form-horizontal">
+			<form id="edit_category_form" action="#" class="form-horizontal">
 				<div class="form-body">
 
-					<div id="add_category_alert"></div>
+					<div id="edit_category_alert"></div>
+
+					<input type="hidden" id="edit_id" name="edit_id" th:value="${vm.id}" />
 
 					<div class="form-group">
 						<label class="control-label col-md-3"> <span
@@ -17,8 +19,21 @@
 								* </span>
 						</label>
 						<div class="col-md-6">
-							<input type="text" id="add_name" name="add_name"
-								class="form-control input-sm" />
+							<input type="text" id="edit_name" name="edit_name"
+								class="form-control input-sm" th:value="${vm.name}" />
+						</div>
+						<div class="col-md-3"></div>
+					</div>
+
+					<div class="form-group">
+						<label class="control-label col-md-3"> <span
+							th:text="#{status}"></span>
+						</label>
+						<div class="col-md-6">
+							<span class="form-control-static" th:if="${vm.status} == '1'"
+								th:text="#{yes}"></span> <span
+								class="form-control-static" th:if="${vm.status} == '0'"
+								th:text="#{no}"></span>
 						</div>
 						<div class="col-md-3"></div>
 					</div>
@@ -28,8 +43,8 @@
 							th:text="#{remark}"></span>
 						</label>
 						<div class="col-md-6">
-							<textarea class="form-control input-sm" id="add_remark"
-								name="add_remark"></textarea>
+							<textarea class="form-control input-sm" id="edit_remark"
+								name="edit_remark" th:text="${vm.remark}"></textarea>
 						</div>
 						<div class="col-md-3"></div>
 					</div>
@@ -39,11 +54,11 @@
 	</div>
 </div>
 <div class="modal-footer" xmlns:th="http://www.thymeleaf.org">
-	<button type="button" id="btn_add_close" class="btn default"
+	<button type="button" id="btn_edit_close" class="btn default"
 		data-dismiss="modal">
 		<i class="fa fa-close"></i> <span th:text="#{close}"></span>
 	</button>
-	<button type="button" id="btn_add_submit" class="btn blue">
+	<button type="button" id="btn_edit_submit" class="btn blue">
 		<i class="fa fa-check"></i> <span th:text="#{submit}"></span>
 	</button>
 </div>
@@ -53,17 +68,17 @@
 
 	$(function() {
 
-		$('#add_category_form').validate({
+		$('#edit_category_form').validate({
 			errorElement : 'span',
 			errorClass : 'help-block help-block-error',
 			focusInvalid : false,
 			ignore : '',
 			rules : {
-				add_name : {
+				edit_name : {
 					required : true,
 					maxlength : 40
 				},
-				add_remark : {
+				edit_remark : {
 					maxlength : 512
 				}
 			},
@@ -84,12 +99,13 @@
 			},
 			submitHandler : function(e) {
 				var request = {};
-				request.name = $.trim($('#add_name').val());
-				request.remark = $.trim($('#add_remark').val());
+				request.id = $.trim($('#edit_id').val());
+				request.name = $.trim($('#edit_name').val());
+				request.remark = $.trim($('#edit_remark').val());
 
 				$.ajax({
-					url : '/api/product-categories',
-					type : 'POST',
+					url : '/api/products/categories',
+					type : 'PUT',
 					data : JSON.stringify(request),
 					contentType : 'application/json',
 					cache : false,
@@ -98,14 +114,14 @@
 						var json = JSON.parse(xhr.responseText);
 						if (json.success) {
 							$('#table_list').bootstrapTable('refresh');
-							$('#btn_add_close').click();
+							$('#btn_edit_close').click();
 						} else {
-                            var message = /*[[#{ add_failed }]]*/ 'add_failed';
+							var message = /*[[#{ edit_failed }]]*/ 'edit_failed';
 							App.alert({
-								container : '#add_category_alert',
+								container : '#edit_category_alert',
 								place : 'append',
 								type : 'danger',
-								message : message +　json.message,
+								message : message + json.message,
 								close : true,
 								reset : true,
 								focus : true,
@@ -117,10 +133,9 @@
 			}
 		})
 
-		$('#btn_add_submit').click(function() {
-			$('#add_category_form').submit();
+		$('#btn_edit_submit').click(function() {
+			$('#edit_category_form').submit();
 		})
 	});
 
 	/*]]>*/
-</script>

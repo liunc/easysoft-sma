@@ -121,10 +121,9 @@
 				search: false,
 				queryParams: function (params) {
 					return {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
-						limit: params.limit,   //页面大小
-						offset: params.offset,  //页码
-						sort: params.sort,
-						order: params.order,
+						size: params.limit,   //页面大小
+						page: params.offset / params.limit,  //页码
+						sort: params.sort + ',' + params.order,
 						name: $.trim($('#query_name').val()),
 						status: $.trim($('#query_status').val()),
 						salesYear: $.trim($('#query_sales_year').val()),
