@@ -29,15 +29,24 @@
 									<label th:text="#{name}"> </label> <input id="query_name" type="text"
 										class="form-control input-sm"></input>
 								</div>
+								<div class="form-group">
+									<label th:text="#{status}"> </label> <select id="query_status"
+										class="form-control input-sm">
+										<option value="" th:text="#{all}"></option>
+										<option value="1" th:text="#{yes}"></option>
+										<option value="0" th:text="#{no}"></option>
+									</select>
+								</div>
+
 							</div>
 						</div>
 						<div class="col-md-3 col-sm-12" style="text-align: right">
 							<button id="btn_search" class="btn btn-success btn-sm">
 								<i class="fa fa-search"></i> <span th:text="#{search}"></span>
 							</button>
-							<a th:href="@{/customer-category/add}" data-target="#modal_category" data-toggle="modal"
+							<a th:href="@{/customer/category_add}" data-target="#modal_category" data-toggle="modal"
 								class="btn btn-info btn-sm">
-								<i class="fa fa-plus"></i> <span th:text="#{add}"></span>
+								<i class="fa fa-plus"></i> <span class="hidden-xs" th:text="#{add}"></span>
 							</a>
 						</div>
 					</div>
@@ -79,11 +88,10 @@
 			highlightCurrentUrl();
 
 			$('#table_list').bootstrapTable({
-				url: '/customer-category/list',
-				method: 'post',
+				url: '/api/customers/categories/',
+				method: 'get',
 				pagination: true,
 				sortable: true,
-				sortOrder: 'asc',
 				sortName: 'name',
 				striped: true,
 				pageSize: 25,
@@ -92,11 +100,11 @@
 				search: false,
 				queryParams: function (params) {
 					return {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
-						limit: params.limit,   //页面大小
-						offset: params.offset,  //页码
-						sort: params.sort,
-						order: params.order,
-						name: $.trim($('#query_name').val())
+						size: params.limit,   //页面大小
+						page: params.offset / params.limit,  //页码
+						sort: params.sort + ',' + params.order,
+						name: $.trim($('#query_name').val()),
+						status: $.trim($('#query_status').val())
 					};
 				},
 				// toolbar :'#toolbar',
@@ -112,6 +120,14 @@
 						formatter: 'nameFormatter'
 					},
 					{
+						field: 'status',
+						title: /*[[#{ status }]]*/ 'status',
+						sortable: true,
+						width: 100,
+						align: 'center',
+						formatter: 'statusFormatter'
+					},
+					{
 						field: 'remark',
 						title: /*[[#{ remark }]]*/ 'remark',
 						sortable: true
@@ -119,7 +135,7 @@
 					{
 						field: 'oper',
 						title: /*[[#{ action }]]*/ 'action',
-						width: 110, 
+						width: 110,
 						align: 'center',
 						formatter: 'operateFormatter'
 					}
@@ -133,15 +149,65 @@
 		});
 
 		function nameFormatter(value, row, index) {
-			return '<a href="/customer-category/detail_' + row.id + '" data-target="#modal_category" data-toggle="modal" >'
+			return '<a href="/customer/category_detail_' + row.id + '" data-target="#modal_category" data-toggle="modal" >'
 				+ value + '</a>';
 		}
 
+		function statusFormatter(value, row, index) {
+			$('#query_status option').each(function () {
+				if ($(this).val() == value) {
+					value = $(this).text();
+					return;
+				}
+			});
+
+			var text = /*[[#{ change }]]*/ 'change';
+			return value
+			+ ' <a onclick="changeCategory(\'' + row.id + '\')" title="' + text + '" >' + text
+				+ '</a>';
+
+		}
+
 		function operateFormatter(value, row, index) {
-			return '<a href="/customer-category/edit_' + row.id + '" data-target="#modal_category" data-toggle="modal" class="btn btn-circle btn-icon-only btn-default" title="' + /*[[#{ edit }]]*/ 'edit' 
-			+ '"><i class="fa fa-pencil"></i></a>'
-				+ '<a href="javascript:;" class="btn btn-circle btn-icon-only btn-default" onclick="deleteCategory(\'' + row.id + '\')" title="' + /*[[#{ delete}]]*/ 'delete' 
+			return '<a href="/customer/category_edit_' + row.id + '" data-target="#modal_category" data-toggle="modal" class="btn btn-circle btn-icon-only btn-default" title="' + /*[[#{ edit }]]*/ 'edit'
+				+ '"><i class="fa fa-pencil"></i></a>'
+				+ '<a href="javascript:;" class="btn btn-circle btn-icon-only btn-default" onclick="deleteCategory(\'' + row.id + '\')" title="' + /*[[#{ delete}]]*/ 'delete'
 				+ '"><i class="fa fa-remove"></i></a>';
+		}
+
+		function changeCategory(id) {
+			if (!confirm(/*[[#{ confirm_change }]]*/ 'confirm_change')) {
+				return;
+			}
+			$.ajax({
+				url: '/api/customers/categories/' + id,
+				type: 'PATCH',
+				contentType: 'application/json',
+				cache: false,
+				complete: function (xhr) {
+					var json = JSON.parse(xhr.responseText);
+					var alertType = 'danger';
+					var alertIcon = 'warning';
+					var message = /*[[#{ action_failed }]]*/ 'action_failed';
+					if (json.success) {
+						alertType = 'success';
+						alertIcon = 'check';
+						message = /*[[#{ action_success }]]*/ 'action_success';
+						$('#table_list').bootstrapTable('refresh');
+					}
+					App.alert({
+						container: '#action_alert',
+						place: 'prepend',
+						type: alertType,
+						message: message + json.message,
+						close: true,
+						reset: true,
+						focus: true,
+						closeInSeconds: 5,
+						icon: alertIcon
+					});
+				}
+			});
 		}
 
 		function deleteCategory(id) {
@@ -149,17 +215,15 @@
 				return;
 			}
 			$.ajax({
-				url: '/api/customer-categories/' + id,
+				url: '/api/customers/categories/' + id,
 				type: 'DELETE',
 				contentType: 'application/json',
 				cache: false,
-				datatype: 'json',
-				data: id,
 				complete: function (xhr) {
 					var json = JSON.parse(xhr.responseText);
 					var alertType = 'danger';
 					var alertIcon = 'warning';
-					var message = json.message;
+					var message = /*[[#{ delete_failed }]]*/ 'delete_failed';
 					if (json.success) {
 						alertType = 'success';
 						alertIcon = 'check';
@@ -170,7 +234,7 @@
 						container: '#action_alert',
 						place: 'prepend',
 						type: alertType,
-						message: message,
+						message: message + json.message,
 						close: true,
 						reset: true,
 						focus: true,

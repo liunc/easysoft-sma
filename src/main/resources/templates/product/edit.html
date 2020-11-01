@@ -18,7 +18,7 @@
 						<label class="control-label col-md-3"> <span th:text="#{product_category}"></span>
 						</label>
 						<div class="col-md-6">
-							<span class="form-control-static" th:text="${categoryName}"></span>
+							<span class="form-control-static" th:text="${vm.categoryName}"></span>
 						</div>
 						<div class="col-md-3">
 						</div>
@@ -99,8 +99,8 @@
 						</label>
 						<div class="col-md-6">
 							<label class="checkbox-inline" th:each="mode:${deliveryModes}">
-								<input type="checkbox" name="edit_support_delivery_mode" th:value="${mode.key}" />
-								<span th:text="${mode.value}"></span>
+								<input type="checkbox" name="edit_support_delivery_mode" th:value="${mode.value}" />
+								<span th:text="${mode.text}"></span>
 							</label>
 						</div>
 						<div class="col-md-3"></div>

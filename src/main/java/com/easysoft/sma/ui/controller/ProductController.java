@@ -3,13 +3,11 @@ package com.easysoft.sma.ui.controller;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
 import com.easysoft.lib.common.LocalMessageSource;
 import com.easysoft.lib.jdb.domain.dto.TextValueObject;
 import com.easysoft.lib.jdb.domain.valueobject.ZeroOne;
 import com.easysoft.sma.domain.dto.ProductCategoryDetailResponse;
 import com.easysoft.sma.domain.dto.ProductDetailResponse;
-import com.easysoft.sma.domain.service.ProductCategoryService;
 import com.easysoft.sma.domain.service.ProductService;
 import com.easysoft.sma.domain.valueobject.DeliveryMode;
 
@@ -31,9 +29,6 @@ public class ProductController {
     private ProductService productService;
 
     @Autowired
-    private ProductCategoryService productCategoryService;
-
-    @Autowired
     private LocalMessageSource messageSource;
 
     private List<String> builderSalesYears() {
@@ -50,7 +45,7 @@ public class ProductController {
     @RequestMapping("/index")
     public String getProductIndex(Model model) {
 
-        List<TextValueObject> categories = this.productCategoryService.findAll(ZeroOne.ONE);
+        List<TextValueObject> categories = this.productService.findProductCategoryByStatus(ZeroOne.ONE);
         model.addAttribute("categories", categories);
 
         model.addAttribute("salesYears", this.builderSalesYears());
@@ -67,26 +62,49 @@ public class ProductController {
     @RequestMapping("/add")
 	public String getProductAdd(Model model) {
 
-		logger.info("product add.");
+		List<TextValueObject> categories = this.productService.findProductCategoryByStatus(ZeroOne.ONE);
+        model.addAttribute("categories", categories);
+
+		model.addAttribute("salesYears", this.builderSalesYears());
+
+		List<TextValueObject> deliveryModes = new ArrayList<TextValueObject>();
+        for (String mode : DeliveryMode.all()) {
+            deliveryModes.add(new TextValueObject(this.messageSource.getMessage("delivery_mode_" + mode), mode));
+        }
+		model.addAttribute("deliveryModes", deliveryModes);
+        
 		return "product/add";
 	}
 
 	@RequestMapping("/edit_{id}")
 	public String getProductEdit(Model model, @PathVariable String id) {
 		
-		ProductDetailResponse response = this.productService.find(id);
+		List<TextValueObject> deliveryModes = new ArrayList<TextValueObject>();
+        for (String mode : DeliveryMode.all()) {
+            deliveryModes.add(new TextValueObject(this.messageSource.getMessage("delivery_mode_" + mode), mode));
+        }
+		model.addAttribute("deliveryModes", deliveryModes);
+		
+		ProductDetailResponse response = this.productService.findProductById(id);
 		model.addAttribute("vm", response);
 		return "product/edit";
 	}
 
 	@RequestMapping("/detail_{id}")
 	public String getProductDetail(Model model, @PathVariable String id) {
-		ProductDetailResponse response = this.productService.find(id);
+
+		ProductDetailResponse response = this.productService.findProductById(id);
+		
+		List<String> deliveryModes = new ArrayList<String>();
+        for (String mode : response.getSupportDeliveryMode().split(",")) {
+            deliveryModes.add(this.messageSource.getMessage("delivery_mode_" + mode));
+        }
+        response.setSupportDeliveryMode(String.join(",", deliveryModes));
 		model.addAttribute("vm", response);
 		return "product/detail";
 	}
 	
-	@RequestMapping("/index")
+	@RequestMapping("/category_index")
 	public String getProductCategoryIndex(Model model) {
 
 		logger.info("product category index.");
@@ -96,21 +114,21 @@ public class ProductController {
 	@RequestMapping("/category_add")
 	public String getProductCategoryAdd(Model model) {
 
-		logger.info("product category add.");
 		return "product/category_add";
 	}
 
 	@RequestMapping("/category_edit_{id}")
 	public String getProductCategoryEdit(Model model, @PathVariable String id) {
-		
-		ProductCategoryDetailResponse response = this.productCategoryService.find(id);
+	
+		ProductCategoryDetailResponse response = this.productService.findProductCategoryById(id);
 		model.addAttribute("vm", response);
 		return "product/category_edit";
 	}
 
 	@RequestMapping("/category_detail_{id}")
 	public String getProductCategoryDetail(Model model, @PathVariable String id) {
-		ProductCategoryDetailResponse response = this.productCategoryService.find(id);
+ 
+		ProductCategoryDetailResponse response = this.productService.findProductCategoryById(id);
 		model.addAttribute("vm", response);
 		return "product/category_detail";
 	}

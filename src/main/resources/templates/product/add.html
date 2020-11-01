@@ -95,8 +95,8 @@
 						<div class="col-md-6">
 							<label class="checkbox-inline" th:each="mode:${deliveryModes}">
 								<input type="checkbox" name="add_support_delivery_mode" checked="checked"
-									th:value="${mode.key}" /> 
-								<span th:text="${mode.value}"></span>
+									th:value="${mode.value}" /> 
+								<span th:text="${mode.text}"></span>
 							</label>
 						</div>
 						<div class="col-md-3"></div>
@@ -201,7 +201,7 @@
 				request.remark = $.trim($('#add_remark').val());
 
 				$.ajax({
-					url: '/product/add',
+					url: '/api/products',
 					type: 'POST',
 					data: JSON.stringify(request),
 					contentType: 'application/json',

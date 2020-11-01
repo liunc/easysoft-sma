@@ -1,7 +1,7 @@
 package com.easysoft.sma.ui.controller;
 
 import com.easysoft.sma.domain.dto.CustomerCategoryDetailResponse;
-import com.easysoft.sma.domain.service.CustomerCategoryService;
+import com.easysoft.sma.domain.service.CustomerService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,39 +12,39 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/customer-category")
+@RequestMapping("/customer")
 public class CustomerCategoryController {
 	private static final Logger logger = LoggerFactory.getLogger(CustomerCategoryController.class);
 
 	@Autowired
-	private CustomerCategoryService customerCategoryService;
+	private CustomerService customerService;
 
-	@RequestMapping("/index")
-	public String index(Model model) {
+	@RequestMapping("/category_index")
+	public String getCustomerCategoryIndex(Model model) {
 
 		logger.info("customer category index.");
-		return "customercategory/index";
+		return "customer/category_index";
 	}
 
-	@RequestMapping("/add")
-	public String add(Model model) {
+	@RequestMapping("/category_add")
+	public String getCustomerCategoryAdd(Model model) {
 
 		logger.info("customer category add.");
-		return "customercategory/add";
+		return "customer/category_add";
 	}
 
-	@RequestMapping("/edit_{id}")
+	@RequestMapping("/category_edit_{id}")
 	public String edit(Model model, @PathVariable String id) {
 		
-		CustomerCategoryDetailResponse response = this.customerCategoryService.find(id);
+		CustomerCategoryDetailResponse response = this.customerService.findCustomerCategoryById(id);
 		model.addAttribute("vm", response);
-		return "customercategory/edit";
+		return "customer/category_edit";
 	}
 
-	@RequestMapping("/detail_{id}")
+	@RequestMapping("/category_detail_{id}")
 	public String detail(Model model, @PathVariable String id) {
-		CustomerCategoryDetailResponse response = this.customerCategoryService.find(id);
+		CustomerCategoryDetailResponse response = this.customerService.findCustomerCategoryById(id);
 		model.addAttribute("vm", response);
-		return "customercategory/detail";
+		return "customer/category_detail";
 	}
 }

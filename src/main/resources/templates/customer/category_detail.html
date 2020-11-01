@@ -1,3 +1,4 @@
+
 <div class="modal-header" xmlns:th="http://www.thymeleaf.org">
 	<button type="button" class="close" data-dismiss="modal"
 		aria-hidden="true"></button>
@@ -18,6 +19,17 @@
 						</div>
 					</div>
 					<div class="form-group">
+						<label class="control-label col-md-3"> <span
+							th:text="#{status}"></span>
+						</label>
+						<div class="col-md-9">
+							<span class="form-control-static" th:if="${vm.status} == '1'"
+								th:text="#{yes}"></span> <span
+								class="form-control-static" th:if="${vm.status} == '0'"
+								th:text="#{no}"></span>
+						</div>
+					</div>
+					<div class="form-group">
 						<label class="col-md-3 control-label" th:text="#{remark}"></label>
 			
 						<div class="col-md-9">
@@ -29,7 +41,7 @@
 			
 						<div class="col-md-9">
 							<span class="form-control-static" th:text="${vm.creater}"></span>&nbsp;&nbsp;<span
-								class="form-control-static" th:text="${vm.createTime}"></span>
+								class="form-control-static" th:text="${#dates.format(vm.createTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
 						</div>
 					</div>
 			
@@ -38,7 +50,7 @@
 			
 						<div class="col-md-9">
 							<span class="form-control-static" th:text="${vm.updater}"></span>&nbsp;&nbsp;<span
-								class="form-control-static" th:text="${vm.updateTime}"></span>
+								class="form-control-static" th:text="${#dates.format(vm.updateTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
 						</div>
 					</div>
 					

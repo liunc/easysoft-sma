@@ -47,7 +47,7 @@ public class ProductCategory extends BaseEntity {
 		this.remark = remark;
 	}
 
-	public void changeStatus(){
+	public void changeStatus() {
 
 		if (ZeroOne.ONE.equals(this.status)) {
 			this.status = ZeroOne.ZERO;
