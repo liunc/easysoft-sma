@@ -1,0 +1,82 @@
+<div class="modal-header" xmlns:th="http://www.thymeleaf.org">
+	<button type="button" class="close" data-dismiss="modal"
+		aria-hidden="true"></button>
+	<h4 class="modal-title" th:text="#{view_customer}"></h4>
+</div>
+<div class="modal-body" xmlns:th="http://www.thymeleaf.org">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="form-horizontal">
+				<div class="form-body">
+
+					<div class="form-group">
+						<label class="control-label col-md-3"> <span
+							th:text="#{customer_category}"></span>
+						</label>
+						<div class="col-md-9">
+							<span class="form-control-static" th:text="${vm.categoryName}"></span>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-md-3"> <span
+							th:text="#{wechat_name}"></span>
+						</label>
+						<div class="col-md-9">
+							<span class="form-control-static" th:text="${vm.wechatName}"></span>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-md-3"> <span
+							th:text="#{name}"></span>
+						</label>
+						<div class="col-md-9">
+							<span class="form-control-static" th:text="${vm.name}"></span>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-md-3"> <span
+							th:text="#{available}"></span>
+						</label>
+						<div class="col-md-9">
+							<span class="form-control-static" th:if="${vm.available} == 'Y'"
+								th:text="#{yes}"></span> <span
+								class="form-control-static" th:if="${vm.available} == 'N'"
+								th:text="#{no}"></span>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-3 control-label" th:text="#{remark}"></label>
+			
+						<div class="col-md-9">
+							<span class="form-control-static" th:text="${vm.remark}"></span>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-3 control-label" th:text="#{creater}"></label>
+			
+						<div class="col-md-9">
+							<span class="form-control-static" th:text="${vm.creater}"></span>&nbsp;&nbsp;<span
+								class="form-control-static" th:text="${vm.createTime}"></span>
+						</div>
+					</div>
+			
+					<div class="form-group">
+						<label class="col-md-3 control-label" th:text="#{updater}"></label>
+			
+						<div class="col-md-9">
+							<span class="form-control-static" th:text="${vm.updater}"></span>&nbsp;&nbsp;<span
+								class="form-control-static" th:text="${vm.updateTime}"></span>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal-footer" xmlns:th="http://www.thymeleaf.org">
+	<button type="button" class="btn default"
+		data-dismiss="modal">
+		<i class="fa fa-close"></i> <span th:text="#{close}"></span>
+	</button>
+</div>

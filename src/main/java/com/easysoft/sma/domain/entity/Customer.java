@@ -120,7 +120,7 @@ public class Customer extends BaseEntity {
 		this.balance = this.balance.subtract(amount);
 	}
 
-	public void change() {
+	public void changeStatus() {
 		if (ZeroOne.ONE.equals(this.status)) {
 			this.status = ZeroOne.ZERO;
 			return;

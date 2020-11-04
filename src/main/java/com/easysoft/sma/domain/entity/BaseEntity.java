@@ -84,7 +84,7 @@ public class BaseEntity implements Serializable {
 		return updateTime;
 	}
 	
-	protected void create() {
+	public void create() {
 		this.id = UUID.randomUUID().toString().replaceAll("-", "");
 	}
 }

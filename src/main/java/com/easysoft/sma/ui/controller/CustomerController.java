@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/customer")
-public class CustomerCategoryController {
-	private static final Logger logger = LoggerFactory.getLogger(CustomerCategoryController.class);
+public class CustomerController {
+	private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
 
 	@Autowired
 	private CustomerService customerService;

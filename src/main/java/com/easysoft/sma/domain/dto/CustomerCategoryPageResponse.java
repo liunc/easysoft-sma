@@ -71,7 +71,7 @@ public class CustomerCategoryPageResponse {
 				break;
 
 			case "status":
-				spec = qcc.name.asc();
+				spec = qcc.name.asc();	
 				break;
 
 			case "remark":

@@ -1,0 +1,198 @@
+<html xmlns:th="http://www.thymeleaf.org" th:replace="shared/layout_default">
+<th:block th:fragment="page_level_plugins_styles">
+	<link th:href="@{/assets/global/plugins/bootstrap-table/bootstrap-table.min.css}" rel="stylesheet"
+		type="text/css" />
+</th:block>
+<th:block th:fragment="page_title">
+	<h1 class="page-title">
+		<span th:text="#{customer_transaction_record}"> </span> <small></small>
+	</h1>
+</th:block>
+<div th:fragment="page_bar">
+	<ul class="page-breadcrumb">
+		<li><i class="icon-home"></i> <a href="/" th:text="#{homepage}"></a>
+			<i class="fa fa-angle-right"></i></li>
+		<li><span th:text="#{customer}"> </span> <i class="fa fa-angle-right"></i></li>
+		<li><span th:text="#{transaction_record}"> </span> </li>
+	</ul>
+</div>
+<th:block th:fragment="content">
+	<div class="row">
+		<div class="col-md-12">
+			<div id="action_alert"></div>
+			<div class="portlet light">
+				<div class="portlet-body">
+					<div class="row">
+						<div class="col-md-9 col-sm-12">
+							<div class="form-inline">
+								<div class="form-group">
+									<label th:text="#{wechat_name}"> </label> <input type="text"
+										class="form-control input-sm" id="query_wechat_name" style="width: 140px;" />
+								</div>
+								<div class="form-group">
+									<label th:text="#{personal_name}"> </label> <input type="text"
+										class="form-control input-sm" id="query_name" style="width: 140px;" />
+								</div>
+								<div class="form-group">
+									<label th:text="#{transaction_source}"></label> <select
+										id="query_transaction_source" class="form-control">
+										<option value="" th:text="#{all}"></option>
+										<option th:each="transactionSource:${transactionSources}"
+											th:value="${transactionSource.key}" th:text="${transactionSource.value}">
+										</option>
+
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-3 col-sm-12" style="text-align: right">
+							<button id="btn_search" class="btn btn-success btn-sm">
+								<i class="fa fa-search"></i> <span th:text="#{search}"></span>
+							</button>
+						</div>
+					</div>
+					<br />
+					<table id="table_list">
+					</table>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</th:block>
+<th:block th:fragment="page_level_plugins_scripts">
+	<script th:src="@{/assets/global/plugins/bootstrap-table/bootstrap-table.min.js}" type="text/javascript"></script>
+	<script th:src="@{/assets/global/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js}"
+		type="text/javascript"></script>
+</th:block>
+<th:block th:fragment="page_level_scripts">
+	<script type="text/javascript" th:inline="javascript">
+		/*<![CDATA[*/
+		$(function () {
+
+			highlightCurrentUrl();
+
+			$('#table_list').bootstrapTable({
+				url: '/customer/transaction/list',
+				method: 'post',
+				pagination: true,
+				sortable: true,
+				sortOrder: 'asc',
+				striped: true,
+				pageSize: 25,
+				pageList: [10, 25, 50, 100],
+				sidePagination: 'server',
+				search: false,
+				queryParams: function (params) {
+					return {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+						limit: params.limit,   //页面大小
+						offset: params.offset,  //页码
+						sort: params.sort,
+						order: params.order,
+						wechatName: $.trim($('#query_wechat_name').val()),
+						name: $.trim($('#query_name').val()),
+						source: $.trim($('#query_transaction_source').val())
+					};
+				},
+				// toolbar :'#toolbar',
+				//Enable the strict search.    
+				strictSearch: false,
+				//Indicate which field is an identity field.
+				idField: 'id',
+				columns: [
+					{
+						field: 'customerCategoryName',
+						title: /*[[#{customer_category}]]*/ 'customer_category',
+						sortable: true,
+						width: 150
+					},
+					{
+						field: 'customerWechatName',
+						title: /*[[#{wechat_name}]]*/ 'wechat_name',
+						sortable: true,
+						width: 150
+					},
+					{
+						field: 'customerName',
+						title: /*[[#{personal_name}]]*/ 'personal_name',
+						sortable: true,
+						width: 75
+					},
+					{
+						field: 'category',
+						title: /*[[#{category}]]*/ 'category',
+						sortable: true,
+						width: 90,
+						align: 'center',
+						talign: 'center',
+						formatter: categoryFormatter
+					},
+					{
+						field: 'source',
+						title: /*[[#{transaction_source}]]*/ 'transaction_source',
+						sortable: true,
+						width: 90,
+						align: 'center',
+						talign: 'center',
+						formatter: sourceFormatter
+					},
+					{
+						field: 'recordTime',
+						title: /*[[#{record_time}]]*/ 'record_time',
+						sortable: true,
+						align: 'center',
+						talign: 'center',
+						width: 160
+					},
+					{
+						field: 'amount',
+						title: /*[[#{amount}]]*/ 'amount',
+						width: 100,
+						align: 'center',
+						talign: 'center',
+						formatter: amountFormatter
+					},
+					{
+						field: 'remark',
+						title: /*[[#{remark}]]*/ 'remark'
+					}
+				]
+			});
+
+			$('#btn_search').click(function () {
+				$('#table_list').bootstrapTable('refresh');
+				return false;
+			});
+
+		});
+
+
+		function categoryFormatter(value, row, index) {
+			if (value == '1') {
+				return /*[[#{transaction_category_1}]]*/ 'transaction_category_1';
+			}
+			if (value == '2') {
+				return /*[[#{transaction_category_2}]]*/ 'transaction_category_2';
+			}
+			return '';
+		}
+
+		function sourceFormatter(value, row, index) {
+			$('#query_transaction_source option').each(function () {
+				if ($(this).val() == value) {
+					value = $(this).text();
+					return;
+				}
+			});
+
+			return value;
+		}
+
+		function amountFormatter(value, row, index) {
+			return value + /*[[#{yuan}]]*/ 'yuan';
+		}
+		/*]]>*/
+	</script>
+</th:block>
+
+</html>

@@ -1,0 +1,193 @@
+<div class="modal-header" xmlns:th="http://www.thymeleaf.org">
+	<button type="button" class="close" data-dismiss="modal"
+		aria-hidden="true"></button>
+	<h4 class="modal-title" th:text="#{edit_customer}"></h4>
+</div>
+<div class="modal-body" xmlns:th="http://www.thymeleaf.org">
+	<div class="row">
+		<div class="col-md-12">
+			<form id="edit_customer_form" action="#" class="form-horizontal">
+				<div class="form-body">
+
+					<div id="edit_customer_alert"></div>
+
+					<input type="hidden" id="edit_id" name="edit_id" th:value="${vm.id}" />
+					<input type="hidden"
+						id="edit_category_id" name="edit_category_id"
+							th:value="${vm.categoryId}" />
+					<input type="hidden"
+						id="edit_available_value" name="edit_available_value"
+							th:value="${vm.available}" />
+
+					<div class="form-group">
+						<label class="control-label col-md-3"> <span
+							th:text="#{customer_category}"></span><span class="required">
+								* </span>
+						</label>
+						<div class="col-md-6">
+							<select id="edit_category" name="edit_category"
+								class="form-control input-sm">
+								<option value="" th:text="#{please_select}"></option>
+								<option th:each="category:${categories}" th:value="${category.key}"
+									th:text="${category.value}"></option>
+							</select>
+						</div>
+						<div class="col-md-3">
+						</div>
+					</div>
+			
+					<div class="form-group">
+						<label class="control-label col-md-3"> <span
+							th:text="#{wechat_name}"></span><span class="required"> * </span>
+						</label>
+						<div class="col-md-6">
+							<input type="text" id="edit_wechat_name" name="edit_wechat_name"
+								class="form-control input-sm" th:value="${vm.wechatName}" />
+						</div>
+						<div class="col-md-3">
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="control-label col-md-3"> <span
+							th:text="#{personal_name}"></span>
+						</label>
+						<div class="col-md-6">
+							<input type="text" id="edit_name" name="edit_name"
+								class="form-control input-sm" th:value="${vm.name}" />
+						</div>
+						<div class="col-md-3"></div>
+					</div>
+
+					<div class="form-group">
+						<label class="control-label col-md-3"> <span
+							th:text="#{available}"></span>
+						</label>
+						<div class="col-md-6">
+							<select id="edit_available" name="edit_available" class="form-control input-sm">
+								<option value="Y" th:text="#{yes}" />
+								<option value="N" th:text="#{no}" />
+							</select>
+						</div>
+						<div class="col-md-3"></div>
+					</div>
+
+					<div class="form-group">
+						<label class="control-label col-md-3"> <span
+							th:text="#{remark}"></span>
+						</label>
+						<div class="col-md-6">
+							<textarea class="form-control input-sm" id="edit_remark"
+								name="edit_remark" th:text="${vm.remark}"></textarea>
+						</div>
+						<div class="col-md-3"></div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<div class="modal-footer" xmlns:th="http://www.thymeleaf.org">
+	<button type="button" id="btn_edit_close" class="btn default"
+		data-dismiss="modal">
+		<i class="fa fa-close"></i> <span th:text="#{close}"></span>
+	</button>
+	<button type="button" id="btn_edit_submit" class="btn blue">
+		<i class="fa fa-check"></i> <span th:text="#{submit}"></span>
+	</button>
+</div>
+
+<script type="text/javascript" th:inline="javascript">
+	/*<![CDATA[*/
+
+	$(function() {
+
+		$('#edit_category').val($('#edit_category_id').val());
+		$('#edit_available').val($('#edit_available_value').val());
+
+		$('#edit_customer_form').validate({
+			errorElement : 'span',
+			errorClass : 'help-block help-block-error',
+			focusInvalid : false,
+			ignore : '',
+			rules : {
+				edit_id : {
+					required : true
+				},
+				edit_category : {
+					required : true
+				},
+				edit_wechat_name : {
+					required : true,
+					maxlength : 40
+				},
+				edit_name : {
+					maxlength : 40
+				},
+				edit_available : {
+					required : true
+				},
+				edit_remark : {
+					maxlength : 512
+				}
+			},
+			messages : {},
+			invalidHandler : function(e, t) {
+			},
+			errorPlacement : function(e, r) {
+				r.parent().next().html(e)
+			},
+			highlight : function(e) {
+				$(e).closest(".form-group").addClass("has-error")
+			},
+			unhighlight : function(e) {
+				$(e).closest(".form-group").removeClass("has-error")
+			},
+			success : function(e) {
+				e.closest(".form-group").removeClass("has-error")
+			},
+			submitHandler : function(e) {
+
+				var request = {};
+				request.id = $.trim($('#edit_id').val());
+				request.categoryId = $.trim($('#edit_category').val());
+				request.wechatName = $.trim($('#edit_wechat_name').val());
+				request.name = $.trim($('#edit_name').val());
+				request.available = $.trim($('#edit_available').val());
+				request.remark = $.trim($('#edit_remark').val());
+
+				$.ajax({
+					url : '/customer/edit',
+					type : 'POST',
+					data : JSON.stringify(request),
+					contentType : 'application/json',
+					cache : false,
+					datatype : 'json',
+					success : function(json) {
+						if (json.result) {
+							$('#table_list').bootstrapTable('refresh');
+							$('#btn_edit_close').click();
+						} else {
+							App.alert({
+								container : '#edit_customer_alert',
+								place : 'append',
+								type : 'danger',
+								message : json.message,
+								close : true,
+								reset : true,
+								focus : true,
+								closeInSeconds : 5
+							});
+						}
+					}
+				});
+			}
+		})
+
+		$('#btn_edit_submit').click(function() {
+			$('#edit_customer_form').submit();
+		})
+	});
+
+	/*]]>*/
+</script>

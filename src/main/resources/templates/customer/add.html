@@ -1,0 +1,162 @@
+<div class="modal-header" xmlns:th="http://www.thymeleaf.org">
+	<button type="button" class="close" data-dismiss="modal"
+		aria-hidden="true"></button>
+	<h4 class="modal-title" th:text="#{add_customer}"></h4>
+</div>
+<div class="modal-body" xmlns:th="http://www.thymeleaf.org">
+	<div class="row">
+		<div class="col-md-12">
+			<form id="add_customer_form" action="#" class="form-horizontal">
+				<div class="form-body">
+
+					<div id="add_customer_alert"></div>
+
+					<div class="form-group">
+						<label class="control-label col-md-3"> <span
+							th:text="#{customer_category}"></span><span class="required">
+								* </span>
+						</label>
+						<div class="col-md-6">
+							<select id="add_category" name="add_category"
+								class="form-control input-sm">
+								<option value="" th:text="#{please_select}"></option>
+								<option th:each="category:${categories}" th:value="${category.key}"
+									th:text="${category.value}"></option>
+							</select>
+						</div>
+						<div class="col-md-3">
+						</div>
+					</div>
+			
+					<div class="form-group">
+						<label class="control-label col-md-3"> <span
+							th:text="#{wechat_name}"></span><span class="required"> * </span>
+						</label>
+						<div class="col-md-6">
+							<input type="text" id="add_wechat_name" name="add_wechat_name"
+								class="form-control input-sm" />
+						</div>
+						<div class="col-md-3">
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="control-label col-md-3"> <span
+							th:text="#{personal_name}"></span>
+						</label>
+						<div class="col-md-6">
+							<input type="text" id="add_name" name="add_name"
+								class="form-control input-sm" />
+						</div>
+						<div class="col-md-3"></div>
+					</div>
+
+					<div class="form-group">
+						<label class="control-label col-md-3"> <span
+							th:text="#{remark}"></span>
+						</label>
+						<div class="col-md-6">
+							<textarea class="form-control input-sm" id="add_remark"
+								name="add_remark"></textarea>
+						</div>
+						<div class="col-md-3"></div>
+					</div>
+
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<div class="modal-footer" xmlns:th="http://www.thymeleaf.org">
+	<button type="button" id="btn_add_close" class="btn default"
+		data-dismiss="modal">
+		<i class="fa fa-close"></i> <span th:text="#{close}"></span>
+	</button>
+	<button type="button" id="btn_add_submit" class="btn blue">
+		<i class="fa fa-check"></i> <span th:text="#{submit}"></span>
+	</button>
+</div>
+
+<script type="text/javascript" th:inline="javascript">
+	/*<![CDATA[*/
+
+	$(function() {
+
+		$('#add_customer_form').validate({
+			errorElement : 'span',
+			errorClass : 'help-block help-block-error',
+			focusInvalid : false,
+			ignore : '',
+			rules : {
+				add_category : {
+					required : true
+				},
+				add_wechat_name : {
+					required : true,
+					maxlength : 40
+				},
+				add_name : {
+					maxlength : 40
+				},
+				add_remark : {
+					maxlength : 512
+				}
+			},
+			messages : {},
+			invalidHandler : function(e, t) {
+			},
+			errorPlacement : function(e, r) {
+				r.parent().next().html(e)
+			},
+			highlight : function(e) {
+				$(e).closest(".form-group").addClass("has-error")
+			},
+			unhighlight : function(e) {
+				$(e).closest(".form-group").removeClass("has-error")
+			},
+			success : function(e) {
+				e.closest(".form-group").removeClass("has-error")
+			},
+			submitHandler : function(e) {
+
+				var request = {};
+				request.categoryId = $.trim($('#add_category').val());
+				request.wechatName = $.trim($('#add_wechat_name').val());
+				request.name = $.trim($('#add_name').val());
+				request.remark = $.trim($('#add_remark').val());
+
+				$.ajax({
+					url : '/customer/add',
+					type : 'POST',
+					data : JSON.stringify(request),
+					contentType : 'application/json',
+					cache : false,
+					datatype : 'json',
+					success : function(json) {
+						if (json.result) {
+							$('#table_list').bootstrapTable('refresh');
+							$('#btn_add_close').click();
+						} else {
+							App.alert({
+								container : '#add_customer_alert',
+								place : 'append',
+								type : 'danger',
+								message : json.message,
+								close : true,
+								reset : true,
+								focus : true,
+								closeInSeconds : 5
+							});
+						}
+					}
+				});
+			}
+		})
+
+		$('#btn_add_submit').click(function() {
+			$('#add_customer_form').submit();
+		})
+	});
+
+	/*]]>*/
+</script>
