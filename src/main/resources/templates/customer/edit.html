@@ -16,8 +16,8 @@
 						id="edit_category_id" name="edit_category_id"
 							th:value="${vm.categoryId}" />
 					<input type="hidden"
-						id="edit_available_value" name="edit_available_value"
-							th:value="${vm.available}" />
+						id="edit_status_value" name="edit_status_value"
+							th:value="${vm.status}" />
 
 					<div class="form-group">
 						<label class="control-label col-md-3"> <span
@@ -28,8 +28,8 @@
 							<select id="edit_category" name="edit_category"
 								class="form-control input-sm">
 								<option value="" th:text="#{please_select}"></option>
-								<option th:each="category:${categories}" th:value="${category.key}"
-									th:text="${category.value}"></option>
+								<option th:each="category:${categories}" th:value="${category.value}"
+									th:text="${category.text}"></option>
 							</select>
 						</div>
 						<div class="col-md-3">
@@ -61,13 +61,13 @@
 
 					<div class="form-group">
 						<label class="control-label col-md-3"> <span
-							th:text="#{available}"></span>
+							th:text="#{status}"></span>
 						</label>
 						<div class="col-md-6">
-							<select id="edit_available" name="edit_available" class="form-control input-sm">
-								<option value="Y" th:text="#{yes}" />
-								<option value="N" th:text="#{no}" />
-							</select>
+							<span class="form-control-static" th:if="${vm.status} == '1'"
+								th:text="#{yes}"></span> <span
+								class="form-control-static" th:if="${vm.status} == '0'"
+								th:text="#{no}"></span>
 						</div>
 						<div class="col-md-3"></div>
 					</div>
@@ -103,7 +103,6 @@
 	$(function() {
 
 		$('#edit_category').val($('#edit_category_id').val());
-		$('#edit_available').val($('#edit_available_value').val());
 
 		$('#edit_customer_form').validate({
 			errorElement : 'span',
@@ -123,9 +122,6 @@
 				},
 				edit_name : {
 					maxlength : 40
-				},
-				edit_available : {
-					required : true
 				},
 				edit_remark : {
 					maxlength : 512
@@ -153,26 +149,27 @@
 				request.categoryId = $.trim($('#edit_category').val());
 				request.wechatName = $.trim($('#edit_wechat_name').val());
 				request.name = $.trim($('#edit_name').val());
-				request.available = $.trim($('#edit_available').val());
 				request.remark = $.trim($('#edit_remark').val());
 
 				$.ajax({
-					url : '/customer/edit',
-					type : 'POST',
+					url : '/api/customers',
+					type : 'PUT',
 					data : JSON.stringify(request),
 					contentType : 'application/json',
 					cache : false,
 					datatype : 'json',
-					success : function(json) {
-						if (json.result) {
+					complete: function (xhr) {
+						var json = JSON.parse(xhr.responseText);
+						if (json.success) {
 							$('#table_list').bootstrapTable('refresh');
 							$('#btn_edit_close').click();
 						} else {
+							var message = /*[[#{ edit_failed }]]*/ 'edit_failed';
 							App.alert({
 								container : '#edit_customer_alert',
 								place : 'append',
 								type : 'danger',
-								message : json.message,
+								message : message + json.message,
 								close : true,
 								reset : true,
 								focus : true,

@@ -1,0 +1,381 @@
+<html xmlns:th="http://www.thymeleaf.org" th:replace="shared/layout_default">
+<th:block th:fragment="page_level_plugins_styles">
+	<link th:href="@{/assets/global/plugins/bootstrap-table/bootstrap-table.min.css}" rel="stylesheet"
+		type="text/css" />
+</th:block>
+<th:block th:fragment="page_title">
+	<h1 class="page-title">
+		<span th:text="#{order_list}"> </span> <small th:text="${statusText}"></small>
+	</h1>
+</th:block>
+<div th:fragment="page_bar">
+	<ul class="page-breadcrumb">
+		<li><i class="icon-home"></i> <a href="/" th:text="#{homepage}"></a>
+			<i class="fa fa-angle-right"></i></li>
+		<li><span th:text="#{order}"> </span> <i class="fa fa-angle-right"></i></li>
+		<li><a th:href="@{/order/index}" th:text="#{list}"></a> <i class="fa fa-angle-right"></i></li>
+		<li><span th:text="${statusText}"> </span></li>
+	</ul>
+</div>
+<th:block th:fragment="content">
+	<div class="row">
+		<div class="col-md-12">
+			<div id="action_alert"></div>
+			<div class="portlet light">
+				<div class="portlet-body">
+					<div class="row">
+						<div class="col-md-9 col-sm-12">
+							<div class="form-inline">
+								<div class="form-group">
+									<label th:text="#{wechat_name}"> </label> <input type="text"
+										class="form-control input-sm" id="query_wechat_name" style="width: 140px;" />
+								</div>
+								<div class="form-group">
+									<label th:text="#{consignee_telephone}"> </label> <input type="text"
+										class="form-control input-sm" id="query_consignee_telephone"
+										style="width: 140px;" />
+								</div>
+								<div class="form-group">
+									<label th:text="#{delivery_mode}"></label> <select id="query_delivery_mode"
+										class="form-control">
+										<option value="" th:text="#{all}"></option>
+										<option th:each="deliveryMode:${deliveryModes}" th:value="${deliveryMode.key}"
+											th:text="${deliveryMode.value}">
+										</option>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-3 col-sm-12" style="text-align: right">
+							<button id="btn_search" class="btn btn-success btn-sm">
+								<i class="fa fa-search"></i> <span th:text="#{search}"></span>
+							</button>
+
+
+
+							<a id="btn_export" href="javascript:;" class="btn btn-info btn-sm">
+								<i class="glyphicon glyphicon-export"></i> <span class="hidden-xs"
+									th:text="#{export}"></span>
+							</a>
+
+							<a id="btn_place_order" href="javascript:;" class="btn btn-info btn-sm">
+								<i class="fa fa-check"></i> <span class="hidden-xs" th:text="#{place_order}"></span>
+							</a>
+
+						</div>
+					</div>
+					<br />
+					<table id="table_list">
+					</table>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</th:block>
+<th:block th:fragment="page_level_plugins_scripts">
+	<script th:src="@{/assets/global/plugins/bootstrap-table/bootstrap-table.min.js}" type="text/javascript"></script>
+	<script th:src="@{/assets/global/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js}"
+		type="text/javascript"></script>
+	<script th:src="@{/assets/global/plugins/jquery-validation/js/jquery.validate.min.js}"
+		type="text/javascript"></script>
+	<script th:src="@{/assets/global/plugins/jquery-validation/js/additional-methods.min.js}"
+		type="text/javascript"></script>
+	<script th:src="@{/assets/global/plugins/jquery-validation/js/localization/messages_zh.min.js}"
+		type="text/javascript"></script>
+</th:block>
+<th:block th:fragment="page_level_scripts">
+	<script type="text/javascript" th:inline="javascript">
+		/*<![CDATA[*/
+		$(function () {
+
+			highlightCurrentUrl();
+
+			$('#table_list').bootstrapTable({
+				url: '/order/list',
+				method: 'post',
+				pagination: true,
+				sortable: true,
+				sortName: 'sequenceNumber',
+				sortOrder: 'asc',
+				striped: true,
+				pageSize: 25,
+				pageList: [10, 25, 50, 100],
+				sidePagination: 'server',
+				search: false,
+				queryParams: function (params) {
+					return {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+						limit: params.limit,   //页面大小
+						offset: params.offset,  //页码
+						sort: params.sort,
+						order: params.order,
+						wechatName: $.trim($('#query_wechat_name').val()),
+						consigneeTelephone: $.trim($('#query_consignee_telephone').val()),
+						deliveryMode: $.trim($('#query_delivery_mode').val()),
+						status: /*[[${ status }]]*/ '2'
+					};
+				},
+				// toolbar :'#toolbar',
+				//Enable the strict search.    
+				strictSearch: false,
+				//Indicate which field is an identity field.
+				idField: 'id',
+				columns: [
+					{
+						field: 'sequenceNumber',
+						title: '#',
+						sortable: true,
+						halign: 'center',
+						align: 'center',
+						width: 50
+					},
+					{
+						title: /*[[#{ customer_information }]]*/ 'customer_information',
+						sortable: true,
+						width: 120,
+						formatter: customerFormatter
+					},
+					{
+						field: 'snapshot',
+						title: /*[[#{ snapshot }]]*/ 'snapshot',
+						width: 300,
+						formatter: snapshotFormatter
+					},
+					{
+						title: /*[[#{address}]]*/ 'address',
+						width: 300,
+						formatter: addressFormatter
+					},
+					{
+						field: 'deliveryMode',
+						title: /*[[#{ delivery_mode }]]*/ 'delivery_mode',
+						width: 75,
+						halign: 'center',
+						align: 'center',
+						formatter: deliveryModeFormatter
+					},
+					{
+						field: 'scheduleDate',
+						title: /*[[#{ schedule_date }]]*/ 'schedule_date',
+						sortable: true,
+						width: 85,
+						formatter: scheduleDateFormatter
+					},
+					{
+						field: 'remark',
+						title: /*[[#{ remark }]]*/ 'remark'
+					},
+					{
+						field: 'oper',
+						title: '<label class="mt-checkbox mt-checkbox-single mt-checkbox-outline"> <input id="checkAll" type="checkbox" class="checkboxes" onclick="checkAll()" /><span> </span>  </label>',
+						halign: 'center',
+						align: 'center',
+						width: 70,
+						formatter: operateFormatter
+					}
+				]
+			});
+
+			$('#btn_search').click(function () {
+				$('#table_list').bootstrapTable('refresh');
+				return false;
+			});
+
+			$('#btn_export').click(function () {
+
+				var request = {};
+				request.wechatName = $.trim($('#query_wechat_name').val());
+				request.consigneeTelephone = $.trim($('#query_consignee_telephone').val());
+				request.deliveryMode = $.trim($('#query_delivery_mode').val());
+
+				$.ajax({
+					url: '/order/export/scheduled',
+					type: 'POST',
+					data: JSON.stringify(request),
+					contentType: 'application/json',
+					cache: false,
+					datatype: 'json',
+					beforeSend: function () {
+						App.blockUI({
+							boxed: !0,
+							message: /*[[#{processing}]]*/ 'Processing...'
+						}),
+							window.setTimeout(function () {
+								App.unblockUI()
+							},
+								2e3)
+					},
+					success: function (json) {
+						if (json.result) {
+							window.location.href = '/file/download/' + json.data;
+						}
+						else {
+							App.alert({
+								container: '#action_alert',
+								place: 'prepend',
+								type: 'danger',
+								message: json.message,
+								close: true,
+								reset: true,
+								focus: true,
+								closeInSeconds: 5,
+								icon: 'warning'
+							});
+						}
+					}
+				});
+
+			});
+
+			$('#btn_place_order').click(function () {
+				if ($('input[name="select_place_order"]:checked').length == 0) {
+					alert(/*[[#{please_select_order}]]*/ 'please_select_order');
+					return;
+				}
+
+				var orders = [];
+
+				$('input[name="select_place_order"]').each(function () {
+					if ($(this).is(':checked')) {
+						var val = $(this).val();
+						console.info(val);
+						orders.push(val);
+					}
+				});
+
+				var request = {};
+				request.orderIds = orders;
+
+				$.ajax({
+					url: '/order/placeorder',
+					type: 'POST',
+					data: JSON.stringify(request),
+					contentType: 'application/json',
+					cache: false,
+					datatype: 'json',
+					success: function (json) {
+						if (json.result) {
+							$('#table_list').bootstrapTable('refresh');
+						} else {
+							App.alert({
+								container: '#action_alert',
+								place: 'append',
+								type: 'danger',
+								message: json.message,
+								close: true,
+								reset: true,
+								focus: true,
+								closeInSeconds: 5
+							});
+						}
+					}
+				});
+			});
+
+		});
+
+		function customerFormatter(value, row, index) {
+			var text = row.customerCategoryName + '<br /> <span style="color: #ff0000;">' + row.customerWechatName + '</span>';
+			if (row.customerName.length > 0) {
+				text = text + '<br />' + row.customerName;
+			}
+			return text;
+		}
+
+		function snapshotFormatter(value, row, index) {
+			var text = value.replace(/,/g, '<br />');
+			text = text + '<br />' + /*[[#{discounted_amount}]]*/ 'discounted_amount'
+				+ ' : ' + row.discountedAmount + /*[[#{ yuan }]]*/ 'yuan';
+			text = text + '<br />' + /*[[#{amount_receivable}]]*/ 'amount_receivable'
+				+ ' : ' + (row.amountCalculated - row.discountedAmount) + /*[[#{ yuan }]]*/ 'yuan';
+			return text;
+		}
+
+		function deliveryModeFormatter(value, row, index) {
+			$('#query_delivery_mode option').each(function () {
+				if ($(this).val() == value) {
+					value = $(this).text();
+					return;
+				}
+			});
+
+			return value;
+		}
+
+		function addressFormatter(value, row, index) {
+			var text = '';
+			if (row.sender.length > 0 || row.senderTelephone.length > 0) {
+				text =  /*[[#{ send }]]*/ 'send'
+					+ ' : <br />' + row.senderAddress + '&nbsp;&nbsp;<span style="color: #ff0000;">' + row.sender + '</span>&nbsp;&nbsp;<span style="color: #ff0000;">' + row.senderTelephone + '</span><br />';
+			}
+			if (row.consignee.length > 0 || row.consigneeTelephone.length > 0) {
+				text = text +/*[[#{ accept }]]*/ 'accept'
+					+ ' : <br />' + row.consigneeAddress + '&nbsp;&nbsp;<span style="color: #ff0000;">' + row.consignee + '</span>&nbsp;&nbsp;<span style="color: #ff0000;">' + row.consigneeTelephone + '</span>';
+			}
+			return text;
+		}
+
+		function scheduleDateFormatter(value, row, index){
+			return value
+			+ '<br /><a href="javascript:;" onclick="undoSchedule(\'' + row.id + '\')" class="btn btn-circle btn-icon-only btn-default" title="' + /*[[#{ undo}]]*/ 'undo' 
+			+ '"><i class="icon-action-undo"></i></a>'
+		}
+
+		function operateFormatter(value, row, index) {
+			return '<label class="mt-checkbox mt-checkbox-single mt-checkbox-outline"> <input name="select_place_order" type="checkbox" class="checkboxes" value="' + row.id + '" /> <span> </span>  </label>'
+		}
+
+		function checkAll() {
+			if ($('#checkAll').is(':checked')) {
+				$('input[name="select_place_order"]').prop('checked', true);
+			} else {
+				$('input[name="select_place_order"]').removeAttr('checked');
+			}
+		}
+
+		function undoSchedule(id) {
+			if (!confirm(/*[[#{ confirm_undo }]]*/ 'confirm_undo')) {
+				return;
+			}
+			$.ajax({
+				url: '/order/schedule/undo',
+				type: 'POST',
+				contentType: 'application/json',
+				data: id,
+				cache: false,
+				datatype: 'json',
+				success: function (json) {
+					if (json.result) {
+						$('#table_list').bootstrapTable('refresh');
+						App.alert({
+							container: '#action_alert',
+							place: 'prepend',
+							type: 'success',
+							message: json.message,
+							close: true,
+							reset: true,
+							focus: true,
+							closeInSeconds: 5,
+							icon: 'check'
+						});
+					} else {
+						App.alert({
+							container: '#action_alert',
+							place: 'prepend',
+							type: 'danger',
+							message: json.message,
+							close: true,
+							reset: true,
+							focus: true,
+							closeInSeconds: 5,
+							icon: 'warning'
+						});
+					}
+				}
+			});
+		}
+		/*]]>*/
+	</script>
+</th:block>
+
+</html>

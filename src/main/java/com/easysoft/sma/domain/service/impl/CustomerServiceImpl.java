@@ -11,33 +11,43 @@ import com.easysoft.lib.jdb.domain.dto.TextValueObject;
 import com.easysoft.sma.domain.dto.CustomerAddRequest;
 import com.easysoft.sma.domain.dto.CustomerAddressDetailResponse;
 import com.easysoft.sma.domain.dto.CustomerAddressPageRequest;
-import com.easysoft.sma.domain.dto.CustomerAddressPageResponse;
+import com.easysoft.sma.domain.dto.CustomerAddressPageRow;
+import com.easysoft.sma.domain.dto.CustomerAddressUpdateRequest;
 import com.easysoft.sma.domain.dto.CustomerCategoryAddRequest;
 import com.easysoft.sma.domain.dto.CustomerCategoryDetailResponse;
 import com.easysoft.sma.domain.dto.CustomerCategoryPageRequest;
-import com.easysoft.sma.domain.dto.CustomerCategoryPageResponse;
+import com.easysoft.sma.domain.dto.CustomerCategoryPageRow;
 import com.easysoft.sma.domain.dto.CustomerCategoryUpdateRequest;
 import com.easysoft.sma.domain.dto.CustomerDetailResponse;
 import com.easysoft.sma.domain.dto.CustomerPageRequest;
-import com.easysoft.sma.domain.dto.CustomerPageResponse;
+import com.easysoft.sma.domain.dto.CustomerPageRow;
 import com.easysoft.sma.domain.dto.CustomerUpdateRequest;
-import com.easysoft.sma.domain.dto.TransactionRecordPageResponse;
+import com.easysoft.sma.domain.dto.TransactionAddRequest;
+import com.easysoft.sma.domain.dto.TransactionPageRequest;
+import com.easysoft.sma.domain.dto.TransactionPageRow;
 import com.easysoft.sma.domain.entity.Customer;
+import com.easysoft.sma.domain.entity.CustomerAddress;
 import com.easysoft.sma.domain.entity.CustomerCategory;
 import com.easysoft.sma.domain.entity.QCustomer;
+import com.easysoft.sma.domain.entity.QCustomerAddress;
 import com.easysoft.sma.domain.entity.QCustomerCategory;
+import com.easysoft.sma.domain.entity.QTransactionRecord;
+import com.easysoft.sma.domain.entity.SalesOrder;
+import com.easysoft.sma.domain.entity.TransactionRecord;
 import com.easysoft.sma.domain.repository.CustomerAddressRepository;
 import com.easysoft.sma.domain.repository.CustomerCategoryRepository;
 import com.easysoft.sma.domain.repository.CustomerRepository;
 import com.easysoft.sma.domain.repository.SalesOrderRepository;
 import com.easysoft.sma.domain.repository.TransactionRecordRepository;
 import com.easysoft.sma.domain.service.CustomerService;
+import com.easysoft.sma.domain.valueobject.SalesOrderStatus;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,9 +118,15 @@ public class CustomerServiceImpl implements CustomerService {
                         this.messageSource.getMessage("customer"), this.messageSource.getMessage("id"), id })));
     }
 
+    private CustomerAddress findAddressById(String id) throws NotFoundException {
+        return this.customerAddressRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(this.messageSource.getMessage("data_not_found", new Object[] {
+                        this.messageSource.getMessage("customer_address"), this.messageSource.getMessage("id"), id })));
+    }
+    
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void addCustomer(CustomerAddRequest request) throws BusinessException {
+    public Customer addCustomer(CustomerAddRequest request) throws BusinessException {
 
         this.checkCategory(request.getCategoryId());
 
@@ -120,6 +136,7 @@ public class CustomerServiceImpl implements CustomerService {
         customer.create(request.getCategoryId(), request.getWechatName(), request.getName(), request.getRemark());
 
         this.customerRepository.save(customer);
+        return customer;
     }
 
     @Override
@@ -165,7 +182,7 @@ public class CustomerServiceImpl implements CustomerService {
         QCustomer qc = QCustomer.customer;
         QCustomerCategory qcc = QCustomerCategory.customerCategory;
         JPAQuery<CustomerDetailResponse> query = jpaQueryFactory.select(Projections.bean(CustomerDetailResponse.class,
-                qc.id, qcc.name.as("categoryName"), qc.wechatName, qc.name, qc.status, qc.balance, qc.remark,
+                qc.id, qc.categoryId, qcc.name.as("categoryName"), qc.wechatName, qc.name, qc.status, qc.balance, qc.remark,
                 qc.creater, qc.createTime, qc.updater, qc.updateTime)).from(qc).leftJoin(qcc)
                 .on(qc.categoryId.eq(qcc.id)).where(qc.id.eq(id));
 
@@ -178,10 +195,10 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public PageResponse<CustomerPageResponse> findCustomerByPage(Pageable pageable, CustomerPageRequest request) {
+    public PageResponse<CustomerPageRow> findCustomerByPage(Pageable pageable, CustomerPageRequest request) {
         QCustomer qc = QCustomer.customer;
         QCustomerCategory qcc = QCustomerCategory.customerCategory;
-        JPAQuery<CustomerPageResponse> query = jpaQueryFactory.select(Projections.bean(CustomerPageResponse.class,
+        JPAQuery<CustomerPageRow> query = jpaQueryFactory.select(Projections.bean(CustomerPageRow.class,
                 qc.id, qcc.name.as("categoryName"), qc.wechatName, qc.name, qc.status, qc.balance, qc.remark)).from(qc)
                 .leftJoin(qcc).on(qc.categoryId.eq(qcc.id));
         if (StringUtils.hasText(request.getCategoryId())) {
@@ -199,10 +216,10 @@ public class CustomerServiceImpl implements CustomerService {
             query.where(qc.status.eq(request.getStatus()));
         }
 
-        CustomerPageResponse.setOrder(query, qcc, qc, pageable.getSort());
-        QueryResults<CustomerPageResponse> result = query.offset(pageable.getOffset()).limit(pageable.getPageSize())
+        CustomerPageRow.setOrder(query, qcc, qc, pageable.getSort());
+        QueryResults<CustomerPageRow> result = query.offset(pageable.getOffset()).limit(pageable.getPageSize())
                 .fetchResults();
-        return new PageResponse<CustomerPageResponse>(result.getTotal(), result.getResults());
+        return new PageResponse<CustomerPageRow>(result.getTotal(), result.getResults());
 
     }
     
@@ -279,11 +296,11 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	@Override
-	public PageResponse<CustomerCategoryPageResponse> findCustomerCategoryByPage(Pageable pageable, CustomerCategoryPageRequest request) {
+	public PageResponse<CustomerCategoryPageRow> findCustomerCategoryByPage(Pageable pageable, CustomerCategoryPageRequest request) {
 
 		QCustomerCategory cc = QCustomerCategory.customerCategory;
-		JPAQuery<CustomerCategoryPageResponse> query = jpaQueryFactory
-				.select(Projections.bean(CustomerCategoryPageResponse.class, cc.id, cc.name, cc.status, cc.remark)).from(cc);
+		JPAQuery<CustomerCategoryPageRow> query = jpaQueryFactory
+				.select(Projections.bean(CustomerCategoryPageRow.class, cc.id, cc.name, cc.status, cc.remark)).from(cc);
 
 		if (request != null) {
 			if (StringUtils.hasText(request.getName())) {
@@ -294,10 +311,10 @@ public class CustomerServiceImpl implements CustomerService {
 			}
 		}
 
-		CustomerCategoryPageResponse.setOrder(query, cc, pageable.getSort());
-		QueryResults<CustomerCategoryPageResponse> result = query.offset(pageable.getOffset())
+		CustomerCategoryPageRow.setOrder(query, cc, pageable.getSort());
+		QueryResults<CustomerCategoryPageRow> result = query.offset(pageable.getOffset())
 				.limit(pageable.getPageSize()).fetchResults();
-		return new PageResponse<CustomerCategoryPageResponse>(result.getTotal(), result.getResults());
+		return new PageResponse<CustomerCategoryPageRow>(result.getTotal(), result.getResults());
 	}
 	
 	 
@@ -316,15 +333,40 @@ public class CustomerServiceImpl implements CustomerService {
 
 		@Override
 		public void changeCustomerStatus(String id) throws BusinessException {
-			// TODO Auto-generated method stub
-			
+			Customer entity = this.findById(id);
+			entity.changeStatus();
+			this.customerRepository.save(entity);
 		}
 
 		@Override
-		public PageResponse<CustomerAddressPageResponse> findAddress(Pageable pageable,
+		public PageResponse<CustomerAddressPageRow> findCustomerAddressByPage(Pageable pageable,
 				CustomerAddressPageRequest request) {
-			// TODO Auto-generated method stub
-			return null;
+			QCustomerAddress qca = QCustomerAddress.customerAddress;
+	        QCustomer qc = QCustomer.customer;
+	        QCustomerCategory qcc = QCustomerCategory.customerCategory;
+	        JPAQuery<CustomerAddressPageRow> query = jpaQueryFactory
+	                .select(Projections.bean(CustomerAddressPageRow.class, qca.id, qc.id.as("customerId"),
+	                        qcc.name.as("customerCategoryName"), qc.wechatName.as("customerWechatName"),
+	                        qc.name.as("customerName"), qca.category, qca.linkman, qca.telephone, qca.address))
+	                .from(qca).leftJoin(qc).on(qca.customerId.eq(qc.id)).leftJoin(qcc).on(qc.categoryId.eq(qcc.id));
+
+	        if (StringUtils.hasText(request.getWechatName())) {
+	            query.where(qc.wechatName.like("%" + request.getWechatName() + "%"));
+	        }
+	        if (StringUtils.hasText(request.getName())) {
+	            query.where(qc.name.like("%" + request.getName() + "%"));
+	        }
+	        if (StringUtils.hasText(request.getLinkman())) {
+	            query.where(qca.linkman.like("%" + request.getLinkman() + "%"));
+	        }
+
+	        if (StringUtils.hasText(request.getTelephone())) {
+	            query.where(qca.telephone.like("%" + request.getTelephone() + "%"));
+	        }
+
+	        CustomerAddressPageRow.setOrder(query, qca, qc, qcc, pageable.getSort());
+	        QueryResults<CustomerAddressPageRow> result =  query.offset(pageable.getOffset()).limit(pageable.getPageSize()).fetchResults();
+	        return new PageResponse<CustomerAddressPageRow>(result.getTotal(), result.getResults());
 		}
 
 		@Override
@@ -334,48 +376,123 @@ public class CustomerServiceImpl implements CustomerService {
 		}
 
 		@Override
-		public CustomerAddressDetailResponse findAddressById(String id) throws BusinessException {
-			// TODO Auto-generated method stub
-			return null;
+		public CustomerAddressDetailResponse findCustomerAddressById(String id) throws BusinessException {
+
+			CustomerAddress entity = this.findAddressById(id);
+			return new CustomerAddressDetailResponse(entity);
 		}
 
 		@Override
-		public void createOrUpdateAddress(String customerId, String category, String linkman, String telephone,
+		public void createOrUpdateCustomerAddress(String customerId, String category, String linkman, String telephone,
 				String address) {
 			// TODO Auto-generated method stub
 			
 		}
 
 		@Override
-		public void updateAddress(String id, String linkman, String telephone, String address)
+		public void updateCustomerAddress(CustomerAddressUpdateRequest request)
 				throws BusinessException {
-			// TODO Auto-generated method stub
+
+			CustomerAddress entity = this.findAddressById(request.getId());
+
+	        entity.update(request.getLinkman(), request.getTelephone(), request.getAddress());
+	        this.customerAddressRepository.save(entity);
 			
 		}
 
 		@Override
-		public void deleteAddress(String id) {
-			// TODO Auto-generated method stub
+		public void deleteCustomerAddress(String id) {
+
+			this.customerAddressRepository.deleteById(id);
 			
 		}
 
 		@Override
-		public PageResponse<TransactionRecordPageResponse> findTransactionRecordByPage(String wechatName, String name,
-				String category, Pageable pageable) {
-			// TODO Auto-generated method stub
-			return null;
+		public PageResponse<TransactionPageRow> findTransactionByPage(Pageable pageable, TransactionPageRequest request) {
+			QTransactionRecord qtr = QTransactionRecord.transactionRecord;
+	        QCustomer qc = QCustomer.customer;
+	        QCustomerCategory qcc = QCustomerCategory.customerCategory;
+	        JPAQuery<TransactionPageRow> query = jpaQueryFactory
+	                .select(Projections.bean(TransactionPageRow.class, qcc.name.as("customerCategoryName"),
+	                        qc.wechatName.as("customerWechatName"), qc.name.as("customerName"), qtr.category, qtr.source,
+	                        qtr.amount, qtr.recordTime, qtr.remark))
+	                .from(qtr).leftJoin(qc).on(qtr.customerId.eq(qc.id)).leftJoin(qcc).on(qc.categoryId.eq(qcc.id));
+
+	        if (StringUtils.hasText(request.getWechatName())) {
+	            query.where(qc.wechatName.like("%" + request.getWechatName() + "%"));
+	        }
+	        if (StringUtils.hasText(request.getName())) {
+	            query.where(qc.name.like("%" + request.getName() + "%"));
+	        }
+
+	        if (StringUtils.hasText(request.getSource())) {
+	            query.where(qtr.source.eq(request.getSource()));
+	        }
+	        
+	        if (StringUtils.hasText(request.getCategory())) {
+	            query.where(qtr.category.eq(request.getCategory()));
+	        }
+
+	        TransactionPageRow.setOrder(query, qtr, qc, qcc, pageable.getSort());
+	        QueryResults<TransactionPageRow> result = query.offset(pageable.getOffset())
+					.limit(pageable.getPageSize()).fetchResults();
+			return new PageResponse<TransactionPageRow>(result.getTotal(), result.getResults());
 		}
 
 		@Override
-		public void recharge(String customerId, String transactionSource, BigDecimal amount, String remark)
+		@Transactional(rollbackFor = Exception.class)
+		public void recharge(TransactionAddRequest request)
 				throws BusinessException {
-			// TODO Auto-generated method stub
+
+			String customerId = request.getCustomerId();
+			Customer customer = this.findById(customerId);
+	        customer.recharge(request.getAmount());
+
+	        List<TransactionRecord> records = new ArrayList<TransactionRecord>(); 
+	        TransactionRecord record = new TransactionRecord();
+	        record.recharge(customerId, request.getSource(), request.getAmount(), request.getRemark());
+	        records.add(record);
+
+	        List<SalesOrder> salesOrders = this.salesOrderRepository.findByCustomerIdAndStatus(customerId, SalesOrderStatus.PENDING_COLLECTION);
+	        if(salesOrders != null && salesOrders.size() > 0){ 
+	            
+	            List<SalesOrder> salesOrders1 = new ArrayList<SalesOrder>();
+	            for(SalesOrder salesOrder : salesOrders){
+
+	                if(!customer.hasBalance()){
+	                    break;
+	                }
+
+	                BigDecimal amount1 = salesOrder.collection(customer.getBalance());
+	                customer.consume(amount1);
+	                salesOrders1.add(salesOrder);
+
+	                TransactionRecord consumeRecord = new TransactionRecord();
+	                consumeRecord.consume(customerId, amount1, "Order Id: " + salesOrder.getId());
+	                records.add(consumeRecord);
+	            }
+
+	            if(salesOrders1.size() > 0){
+	                this.salesOrderRepository.saveAll(salesOrders1);
+	            }
+	        }
+
+	        this.customerRepository.save(customer);
+	        this.transactionRecordRepository.saveAll(records);
 			
 		}
 
 		@Override
-		public void consume(String customerId, BigDecimal amount, String remark) throws BusinessException {
-			// TODO Auto-generated method stub
+		@Transactional(rollbackFor = Exception.class)
+		public void consume(TransactionAddRequest request) throws BusinessException {
+
+			Customer customer = this.findById(request.getCustomerId());
+	        customer.consume(request.getAmount());
+	        this.customerRepository.save(customer);
+
+	        TransactionRecord record = new TransactionRecord();
+	        record.consume(request.getCustomerId(), request.getAmount(), request.getRemark());
+	        this.transactionRecordRepository.save(record);
 			
 		}
 

@@ -9,7 +9,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 
 import org.springframework.data.domain.Sort;
 
-public class ProductPageResponse {
+public class ProductPageRow {
     private String id;
 
     private String categoryName;
@@ -120,7 +120,7 @@ public class ProductPageResponse {
         this.remark = remark;
     }
 
-    public static void setOrder(JPAQuery<ProductPageResponse> query, QProduct p, QProductCategory pc, Sort sort) {
+    public static void setOrder(JPAQuery<ProductPageRow> query, QProduct p, QProductCategory pc, Sort sort) {
 
         for (Sort.Order o : sort) {
 

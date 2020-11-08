@@ -14,8 +14,8 @@ import com.easysoft.lib.common.exception.GoneException;
 import com.easysoft.lib.jdb.domain.dto.PageResponse;
 import com.easysoft.lib.jdb.domain.valueobject.ZeroOne;
 import com.easysoft.sma.CustomProperties;
-import com.easysoft.sma.domain.dto.ProductCategoryPageResponse;
-import com.easysoft.sma.domain.dto.SalesOrderPageResponse;
+import com.easysoft.sma.domain.dto.ProductCategoryPageRow;
+import com.easysoft.sma.domain.dto.SalesOrderPageRow;
 import com.easysoft.sma.domain.dto.SalesOrderProductAddRequest;
 import com.easysoft.sma.domain.dto.SalesOrderProductItem;
 import com.easysoft.sma.domain.dto.SalesOrderScheduledExportResponse;
@@ -87,14 +87,14 @@ public class OrderServiceImpl implements OrderService {
     private JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public PageResponse<SalesOrderPageResponse> findSalesOrder(String wechatName, String name, String consignee,
+    public PageResponse<SalesOrderPageRow> findSalesOrder(String wechatName, String name, String consignee,
             String consigneeTelephone, String deliveryMode, String delay, String status, Pageable pageable) {
 
         QSalesOrder qso = QSalesOrder.salesOrder;
         QCustomer qc = QCustomer.customer;
         QCustomerCategory qcc = QCustomerCategory.customerCategory;
-        JPAQuery<SalesOrderPageResponse> query = jpaQueryFactory
-                .select(Projections.bean(SalesOrderPageResponse.class, qso.id, qc.id.as("customerId"),
+        JPAQuery<SalesOrderPageRow> query = jpaQueryFactory
+                .select(Projections.bean(SalesOrderPageRow.class, qso.id, qc.id.as("customerId"),
                         qcc.name.as("customerCategoryName"), qc.wechatName.as("customerWechatName"),
                         qc.name.as("customerName"), qso.sender, qso.senderTelephone, qso.senderAddress, qso.consignee,
                         qso.consigneeTelephone, qso.consigneeAddress, qso.sequenceNumber, qso.amountCalculated,
@@ -127,11 +127,11 @@ public class OrderServiceImpl implements OrderService {
             query.where(qso.status.eq(status));
         }
 
-        SalesOrderPageResponse.setOrder(query, qso, qc, qcc, pageable.getSort());
+        SalesOrderPageRow.setOrder(query, qso, qc, qcc, pageable.getSort());
         
-        QueryResults<SalesOrderPageResponse> result = query.offset(pageable.getOffset())
+        QueryResults<SalesOrderPageRow> result = query.offset(pageable.getOffset())
 				.limit(pageable.getPageSize()).fetchResults();
-		return new PageResponse<SalesOrderPageResponse>(result.getTotal(), result.getResults());
+		return new PageResponse<SalesOrderPageRow>(result.getTotal(), result.getResults());
     }
 /*
     @Override

@@ -12,7 +12,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 
 import org.springframework.data.domain.Sort;
 
-public class SalesOrderPageResponse {
+public class SalesOrderPageRow {
 
 	private String id;
 
@@ -225,7 +225,7 @@ public class SalesOrderPageResponse {
 		this.remark = remark;
 	}
 
-	public static void setOrder(JPAQuery<SalesOrderPageResponse> query, QSalesOrder so, QCustomer c, QCustomerCategory cc,
+	public static void setOrder(JPAQuery<SalesOrderPageRow> query, QSalesOrder so, QCustomer c, QCustomerCategory cc,
 			Sort sort) {
 
 		if (!sort.iterator().hasNext()) {

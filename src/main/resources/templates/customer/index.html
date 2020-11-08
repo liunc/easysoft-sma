@@ -29,8 +29,8 @@
 									<label th:text="#{customer_category}"></label> <select id="query_category"
 										class="form-control">
 										<option value="" th:text="#{all}"></option>
-										<option th:each="category:${categories}" th:value="${category.key}"
-											th:text="${category.value}"></option>
+										<option th:each="category:${categories}" th:value="${category.value}"
+											th:text="${category.text}"></option>
 
 									</select>
 								</div>
@@ -43,11 +43,11 @@
 										class="form-control input-sm" id="query_name" />
 								</div>
 								<div class="form-group">
-									<label th:text="#{available}"></label> <select id="query_available"
+									<label th:text="#{status}"></label> <select id="query_status"
 										class="form-control">
 										<option value="" th:text="#{all}"></option>
-										<option value="Y" th:text="#{yes}" />
-										<option value="N" th:text="#{no}" />
+										<option value="1" th:text="#{yes}" />
+										<option value="0" th:text="#{no}" />
 									</select>
 								</div>
 
@@ -101,11 +101,11 @@
 			highlightCurrentUrl();
 
 			$('#table_list').bootstrapTable({
-				url: '/customer/list',
-				method: 'post',
+				url: '/api/customers',
+				method: 'GET',
 				pagination: true,
 				sortable: true,
-				sortOrder: 'asc',
+				sortName: 'name',
 				striped: true,
 				pageSize: 25,
 				pageList: [10, 25, 50, 100],
@@ -113,12 +113,11 @@
 				search: false,
 				queryParams: function (params) {
 					return {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
-						limit: params.limit,   //页面大小
-						offset: params.offset,  //页码
-						sort: params.sort,
-						order: params.order,
+						size: params.limit,   //页面大小
+						page: params.offset / params.limit,  //页码
+						sort: params.sort + ',' + params.order,
 						name: $.trim($('#query_name').val()),
-						available: $.trim($('#query_available').val()),
+						status: $.trim($('#query_status').val()),
 						wechatName: $.trim($('#query_wechat_name').val()),
 						categoryId: $.trim($('#query_category').val())
 					};
@@ -131,44 +130,44 @@
 				columns: [
 					{
 						field: 'categoryName',
-						title: [[#{ customer_category }]],
+						title: /*[[#{ customer_category }]]*/ 'customer_category',
 						sortable: true
 					},
 					{
 						field: 'wechatName',
-						title: [[#{ wechat_name }]],
+						title: /*[[#{ wechat_name }]]*/ 'wechat_name',
 						sortable: true,
 						formatter: nameFormatter
 					},
 					{
 						field: 'name',
-						title: [[#{ personal_name }]],
+						title: /*[[#{ personal_name }]]*/ 'personal_name',
 						sortable: true,
 						formatter: nameFormatter
 					},
 					{
 						field: 'balance',
-						title: [[#{ balance }]],
+						title: /*[[#{ balance }]]*/ 'balance',
 						sortable: true,
 						width: 100,
 						align: 'center',
 						formatter: balanceFormatter
 					},
 					{
-						field: 'available',
-						title: [[#{ available }]],
+						field: 'status',
+						title: /*[[#{ status }]]*/ 'status',
 						sortable: true,
 						width: 100,
 						align: 'center',
-						formatter: availableFormatter
+						formatter: statusFormatter
 					},
 					{
 						field: 'remark',
-						title: [[#{ remark }]]
+						title: /*[[#{ remark }]]*/ 'remark'
 					},
 					{
 						field: 'oper',
-						title: [[#{ action }]],
+						title: /*[[#{ action }]]*/ 'action',
 						width: 110,
 						align: 'center',
 						formatter: 'operateFormatter'
@@ -194,60 +193,95 @@
 				+ '</a>';
 		}
 
-		function availableFormatter(value, row, index) {
-			$('#query_available option').each(function () {
+		function statusFormatter(value, row, index) {
+			$('#query_status option').each(function () {
 				if ($(this).val() == value) {
 					value = $(this).text();
 					return;
 				}
 			});
 
-			return value;
+			var text = /*[[#{ change }]]*/ 'change';
+			return value
+			+ ' <a onclick="changeStatus(\'' + row.id + '\')" title="' + text + '" >' + text
+				+ '</a>';
+
 		}
 
 		function operateFormatter(value, row, index) {
-			return '<a href="/customer/edit_' + row.id + '" data-target="#modal_customer" data-toggle="modal" class="btn btn-circle btn-icon-only btn-default" title="' + [[#{ edit }]] + '"><i class="fa fa-pencil"></i></a>'
-				+ '<a href="javascript:;" onclick="deleteCustomer(\'' + row.id + '\')" class="btn btn-circle btn-icon-only btn-default" title="' + [[#{ delete}]] + '"><i class="fa fa-remove"></i></a>';
+			return '<a href="/customer/edit_' + row.id + '" data-target="#modal_customer" data-toggle="modal" class="btn btn-circle btn-icon-only btn-default" title="' + /*[[#{ edit }]]*/ 'edit' 
+			+ '"><i class="fa fa-pencil"></i></a>'
+				+ '<a href="javascript:;" onclick="deleteCustomer(\'' + row.id + '\')" class="btn btn-circle btn-icon-only btn-default" title="' + /*[[#{ delete}]]*/ 'delete'
+				+ '"><i class="fa fa-remove"></i></a>';
 		}
 
-		function deleteCustomer(id) {
-			if (!confirm([[#{ confirm_delete }]])) {
+		function changeStatus(id) {
+			if (!confirm(/*[[#{ confirm_change }]]*/ 'confirm_change')) {
 				return;
 			}
 			$.ajax({
-				url: '/customer/delete',
-				type: 'POST',
+				url: '/api/customers/' + id,
+				type: 'PATCH',
 				contentType: 'application/json',
-				data: id,
+				cache: false,
+				complete: function (xhr) {
+					var json = JSON.parse(xhr.responseText);
+					var alertType = 'danger';
+					var alertIcon = 'warning';
+					var message = /*[[#{ action_failed }]]*/ 'action_failed';
+					if (json.success) {
+						alertType = 'success';
+						alertIcon = 'check';
+						message = /*[[#{ action_success }]]*/ 'action_success';
+						$('#table_list').bootstrapTable('refresh');
+					}
+					App.alert({
+						container: '#action_alert',
+						place: 'prepend',
+						type: alertType,
+						message: message + json.message,
+						close: true,
+						reset: true,
+						focus: true,
+						closeInSeconds: 5,
+						icon: alertIcon
+					});
+				}
+			});
+		}
+		
+		function deleteCustomer(id) {
+			if (!confirm(/*[[#{ confirm_delete }]]*/ 'confirm_delete')) {
+				return;
+			}
+			$.ajax({
+				url: '/api/customers/' + id,
+				type: 'DELETE',
+				contentType: 'application/json',
 				cache: false,
 				datatype: 'json',
-				success: function (json) {
-					if (json.result) {
+				complete: function (xhr) {
+					var json = JSON.parse(xhr.responseText);
+					var alertType = 'danger';
+					var alertIcon = 'warning';
+					var message = /*[[#{ delete_failed }]]*/ 'delete_failed';
+					if (json.success) {
+						alertType = 'success';
+						alertIcon = 'check';
+						message = /*[[#{ delete_success }]]*/ 'delete_success';
 						$('#table_list').bootstrapTable('refresh');
-						App.alert({
-							container: '#action_alert',
-							place: 'prepend',
-							type: 'success',
-							message: json.message,
-							close: true,
-							reset: true,
-							focus: true,
-							closeInSeconds: 5,
-							icon: 'check'
-						});
-					} else {
-						App.alert({
-							container: '#action_alert',
-							place: 'prepend',
-							type: 'danger',
-							message: json.message,
-							close: true,
-							reset: true,
-							focus: true,
-							closeInSeconds: 5,
-							icon: 'warning'
-						});
 					}
+					App.alert({
+						container: '#action_alert',
+						place: 'prepend',
+						type: alertType,
+						message: message + json.message,
+						close: true,
+						reset: true,
+						focus: true,
+						closeInSeconds: 5,
+						icon: alertIcon
+					});
 				}
 			});
 		}

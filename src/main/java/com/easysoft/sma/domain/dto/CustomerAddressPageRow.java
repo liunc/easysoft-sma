@@ -8,7 +8,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 
 import org.springframework.data.domain.Sort;
 
-public class CustomerAddressPageResponse {
+public class CustomerAddressPageRow {
 
 	private String id;
 
@@ -100,7 +100,7 @@ public class CustomerAddressPageResponse {
 		this.address = address;
 	}
 
-	public static void setOrder(JPAQuery<CustomerAddressPageResponse> query, QCustomerAddress ca, QCustomer c,
+	public static void setOrder(JPAQuery<CustomerAddressPageRow> query, QCustomerAddress ca, QCustomer c,
 			QCustomerCategory cc, Sort sort) {
 
 		for (Sort.Order o : sort) {

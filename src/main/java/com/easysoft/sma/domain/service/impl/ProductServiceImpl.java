@@ -12,11 +12,11 @@ import com.easysoft.sma.domain.dto.ProductAddRequest;
 import com.easysoft.sma.domain.dto.ProductCategoryAddRequest;
 import com.easysoft.sma.domain.dto.ProductCategoryDetailResponse;
 import com.easysoft.sma.domain.dto.ProductCategoryPageRequest;
-import com.easysoft.sma.domain.dto.ProductCategoryPageResponse;
+import com.easysoft.sma.domain.dto.ProductCategoryPageRow;
 import com.easysoft.sma.domain.dto.ProductCategoryUpdateRequest;
 import com.easysoft.sma.domain.dto.ProductDetailResponse;
 import com.easysoft.sma.domain.dto.ProductPageRequest;
-import com.easysoft.sma.domain.dto.ProductPageResponse;
+import com.easysoft.sma.domain.dto.ProductPageRow;
 import com.easysoft.sma.domain.dto.ProductUpdateRequest;
 import com.easysoft.sma.domain.entity.Product;
 import com.easysoft.sma.domain.entity.ProductCategory;
@@ -155,11 +155,11 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public PageResponse<ProductPageResponse> findProductByPage(Pageable pageable, ProductPageRequest request) {
+	public PageResponse<ProductPageRow> findProductByPage(Pageable pageable, ProductPageRequest request) {
 		QProduct p = QProduct.product;
 		QProductCategory pc = QProductCategory.productCategory;
-		JPAQuery<ProductPageResponse> query = jpaQueryFactory
-				.select(Projections.bean(ProductPageResponse.class, p.id, pc.name.as("categoryName"), p.salesYear,
+		JPAQuery<ProductPageRow> query = jpaQueryFactory
+				.select(Projections.bean(ProductPageRow.class, p.id, pc.name.as("categoryName"), p.salesYear,
 						p.name, p.price, p.packUnit, p.spec, p.specUnit, p.supportDeliveryMode, p.status, p.remark))
 				.from(p).leftJoin(pc).on(p.categoryId.eq(pc.id));
 		if (StringUtils.hasText(request.getCategoryId())) {
@@ -175,11 +175,11 @@ public class ProductServiceImpl implements ProductService {
 		if (StringUtils.hasText(request.getStatus())) {
 			query.where(p.status.eq(request.getStatus()));
 		}
-		ProductPageResponse.setOrder(query, p, pc, pageable.getSort());
+		ProductPageRow.setOrder(query, p, pc, pageable.getSort());
 
-		QueryResults<ProductPageResponse> result = query.offset(pageable.getOffset()).limit(pageable.getPageSize())
+		QueryResults<ProductPageRow> result = query.offset(pageable.getOffset()).limit(pageable.getPageSize())
 				.fetchResults();
-		return new PageResponse<ProductPageResponse>(result.getTotal(), result.getResults());
+		return new PageResponse<ProductPageRow>(result.getTotal(), result.getResults());
 	}
 
 	@Override
@@ -258,12 +258,12 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public PageResponse<ProductCategoryPageResponse> findProductCategoryByPage(Pageable pageable,
+	public PageResponse<ProductCategoryPageRow> findProductCategoryByPage(Pageable pageable,
 			ProductCategoryPageRequest request) {
 
 		QProductCategory pc = QProductCategory.productCategory;
-		JPAQuery<ProductCategoryPageResponse> query = jpaQueryFactory
-				.select(Projections.bean(ProductCategoryPageResponse.class, pc.id, pc.name, pc.status, pc.remark,
+		JPAQuery<ProductCategoryPageRow> query = jpaQueryFactory
+				.select(Projections.bean(ProductCategoryPageRow.class, pc.id, pc.name, pc.status, pc.remark,
 						pc.creater, pc.createTime, pc.updater, pc.updateTime))
 				.from(pc);
 
@@ -276,10 +276,10 @@ public class ProductServiceImpl implements ProductService {
 			}
 		}
 
-		ProductCategoryPageResponse.setOrder(query, pc, pageable.getSort());
-		QueryResults<ProductCategoryPageResponse> result = query.offset(pageable.getOffset())
+		ProductCategoryPageRow.setOrder(query, pc, pageable.getSort());
+		QueryResults<ProductCategoryPageRow> result = query.offset(pageable.getOffset())
 				.limit(pageable.getPageSize()).fetchResults();
-		return new PageResponse<ProductCategoryPageResponse>(result.getTotal(), result.getResults());
+		return new PageResponse<ProductCategoryPageRow>(result.getTotal(), result.getResults());
 	}
 
 }

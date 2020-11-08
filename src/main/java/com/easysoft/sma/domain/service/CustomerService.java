@@ -6,19 +6,22 @@ import com.easysoft.lib.jdb.domain.dto.TextValueObject;
 import com.easysoft.sma.domain.dto.CustomerAddRequest;
 import com.easysoft.sma.domain.dto.CustomerAddressDetailResponse;
 import com.easysoft.sma.domain.dto.CustomerAddressPageRequest;
-import com.easysoft.sma.domain.dto.CustomerAddressPageResponse;
+import com.easysoft.sma.domain.dto.CustomerAddressPageRow;
+import com.easysoft.sma.domain.dto.CustomerAddressUpdateRequest;
 import com.easysoft.sma.domain.dto.CustomerCategoryAddRequest;
 import com.easysoft.sma.domain.dto.CustomerCategoryDetailResponse;
 import com.easysoft.sma.domain.dto.CustomerCategoryPageRequest;
-import com.easysoft.sma.domain.dto.CustomerCategoryPageResponse;
+import com.easysoft.sma.domain.dto.CustomerCategoryPageRow;
 import com.easysoft.sma.domain.dto.CustomerCategoryUpdateRequest;
 import com.easysoft.sma.domain.dto.CustomerDetailResponse;
 import com.easysoft.sma.domain.dto.CustomerPageRequest;
-import com.easysoft.sma.domain.dto.CustomerPageResponse;
+import com.easysoft.sma.domain.dto.CustomerPageRow;
 import com.easysoft.sma.domain.dto.CustomerUpdateRequest;
-import com.easysoft.sma.domain.dto.TransactionRecordPageResponse;
+import com.easysoft.sma.domain.dto.TransactionAddRequest;
+import com.easysoft.sma.domain.dto.TransactionPageRequest;
+import com.easysoft.sma.domain.dto.TransactionPageRow;
+import com.easysoft.sma.domain.entity.Customer;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
@@ -37,9 +40,9 @@ public interface CustomerService {
 
 	public List<TextValueObject> findCustomerCategoryByStatus(String status);
 
-	public PageResponse<CustomerCategoryPageResponse> findCustomerCategoryByPage(Pageable pageable, CustomerCategoryPageRequest request);
+	public PageResponse<CustomerCategoryPageRow> findCustomerCategoryByPage(Pageable pageable, CustomerCategoryPageRequest request);
 	
-	public void addCustomer(CustomerAddRequest request) throws BusinessException;
+	public Customer addCustomer(CustomerAddRequest request) throws BusinessException;
 	
 	public void existsCustomer(String id) throws BusinessException;
 
@@ -51,28 +54,27 @@ public interface CustomerService {
 
     public CustomerDetailResponse findCustomerById(String id) throws BusinessException;
 
-    public PageResponse<CustomerPageResponse> findCustomerByPage(Pageable pageable, CustomerPageRequest request);
+    public PageResponse<CustomerPageRow> findCustomerByPage(Pageable pageable, CustomerPageRequest request);
 
-	public PageResponse<CustomerAddressPageResponse> findAddress(Pageable pageable, CustomerAddressPageRequest request);
+	public PageResponse<CustomerAddressPageRow> findCustomerAddressByPage(Pageable pageable, CustomerAddressPageRequest request);
 
 	public List<CustomerAddressDetailResponse> findAddress(String customerId, String category);
 
-	public CustomerAddressDetailResponse findAddressById(String id) throws BusinessException;
+	public CustomerAddressDetailResponse findCustomerAddressById(String id) throws BusinessException;
 
-	public void createOrUpdateAddress(String customerId, String category, String linkman, String telephone,
+	public void createOrUpdateCustomerAddress(String customerId, String category, String linkman, String telephone,
 			String address);
 
-	public void updateAddress(String id, String linkman, String telephone, String address) throws BusinessException;
+	public void updateCustomerAddress(CustomerAddressUpdateRequest request) throws BusinessException;
 
-	public void deleteAddress(String id);
+	public void deleteCustomerAddress(String id);
 
-	public PageResponse<TransactionRecordPageResponse> findTransactionRecordByPage(String wechatName, String name, String category,
-			Pageable pageable);
-
-	public void recharge(String customerId, String transactionSource, BigDecimal amount, String remark)
+	public PageResponse<TransactionPageRow> findTransactionByPage(Pageable pageable, TransactionPageRequest request);
+	
+	public void recharge(TransactionAddRequest request)
 			throws BusinessException;
 
-	public void consume(String customerId, BigDecimal amount, String remark) throws BusinessException;
+	public void consume(TransactionAddRequest request) throws BusinessException;
 }
 
 

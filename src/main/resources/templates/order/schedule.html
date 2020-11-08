@@ -1,0 +1,139 @@
+<div class="modal-header" xmlns:th="http://www.thymeleaf.org">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+	<h4 class="modal-title" th:text="#{schedule}"></h4>
+</div>
+<div class="modal-body" xmlns:th="http://www.thymeleaf.org">
+	<div class="row">
+		<div class="col-md-12">
+			<form id="schedule_order_form" action="#" class="form-horizontal">
+				<div class="form-body">
+
+					<div id="schedule_order_alert"></div>
+
+					<div class="form-group">
+						<label class="control-label col-md-3"> <span th:text="#{schedule_date}"></span><span
+								class="required">
+								* </span>
+						</label>
+						<div class="col-md-6">
+							<input id="schedule_date" name="schedule_date" class="form-control input-sm date-picker"
+								type="text" value="" />
+						</div>
+						<div class="col-md-3">
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<div class="modal-footer" xmlns:th="http://www.thymeleaf.org">
+	<button type="button" id="btn_schedule_close" class="btn default" data-dismiss="modal">
+		<i class="fa fa-close"></i> <span th:text="#{close}"></span>
+	</button>
+	<button type="button" id="btn_schedule_submit" class="btn blue">
+		<i class="fa fa-check"></i> <span th:text="#{submit}"></span>
+	</button>
+</div>
+
+<script type="text/javascript" th:inline="javascript">
+	/*<![CDATA[*/
+
+	$(function () {
+
+		$('.date-picker').datepicker({
+			language: 'zh-CN',
+			format: 'yyyy-mm-dd',
+			todayHighlight: 1
+		});
+
+		$('#schedule_order_form').validate({
+			errorElement: 'span',
+			errorClass: 'help-block help-block-error',
+			focusInvalid: false,
+			ignore: '',
+			rules: {
+				schedule_date: {
+					required: true,
+					dateISO: true
+				}
+			},
+			messages: {},
+			invalidHandler: function (e, t) {
+			},
+			errorPlacement: function (e, r) {
+				r.parent().next().html(e)
+			},
+			highlight: function (e) {
+				$(e).closest(".form-group").addClass("has-error")
+			},
+			unhighlight: function (e) {
+				$(e).closest(".form-group").removeClass("has-error")
+			},
+			success: function (e) {
+				e.closest(".form-group").removeClass("has-error")
+			},
+			submitHandler: function (e) {
+
+				var request = {};
+				request.scheduleDate = $.trim($('#schedule_date').val());
+				var orders = [];
+
+				$('input[name="select_schedule"]').each(function () {
+					if ($(this).is(':checked')) {
+						var val = $(this).val();
+						console.info(val);
+						orders.push(val);
+					}
+				});
+
+				if (orders.length == 0) {
+					App.alert({
+						container: '#schedule_order_alert',
+						place: 'append',
+						type: 'danger',
+						message: /*[[#{ please_select_order }]]*/ 'please_select_order',
+						close: true,
+						reset: true,
+						focus: true,
+						closeInSeconds: 5
+					});
+					return false;
+				}
+				request.orderIds = orders;
+
+				$.ajax({
+					url: '/order/schedule',
+					type: 'POST',
+					data: JSON.stringify(request),
+					contentType: 'application/json',
+					cache: false,
+					datatype: 'json',
+					success: function (json) {
+						if (json.result) {
+							$('#table_list').bootstrapTable('refresh');
+							$('#btn_schedule_close').click();
+						} else {
+							App.alert({
+								container: '#schedule_order_alert',
+								place: 'append',
+								type: 'danger',
+								message: json.message,
+								close: true,
+								reset: true,
+								focus: true,
+								closeInSeconds: 5
+							});
+						}
+					}
+				});
+			}
+		})
+
+		$('#btn_schedule_submit').click(function () {
+			$('#schedule_order_form').submit();
+		})
+	});
+
+	/*]]>*/
+</script>

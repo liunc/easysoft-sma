@@ -2,12 +2,14 @@ package com.easysoft.sma.domain.dto;
 
 import org.springframework.data.domain.Sort;
 
+import java.math.BigDecimal;
+
 import com.easysoft.sma.domain.entity.QCustomer;
 import com.easysoft.sma.domain.entity.QCustomerCategory;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQuery;
 
-public class CustomerPageResponse {
+public class CustomerPageRow {
 
 	private String id;
 
@@ -16,6 +18,8 @@ public class CustomerPageResponse {
 	private String wechatName;
 
 	private String name;
+
+	private BigDecimal balance;
 
 	private String status;
 
@@ -53,6 +57,14 @@ public class CustomerPageResponse {
 		this.name = name;
 	}
 
+	public BigDecimal getBalance() {
+		return balance;
+	}
+
+	public void setBalance(BigDecimal balance) {
+		this.balance = balance;
+	}
+
 	public String getStatus() {
 		return status;
 	}
@@ -69,7 +81,7 @@ public class CustomerPageResponse {
 		this.remark = remark;
 	}
 
-	public static void setOrder(JPAQuery<CustomerPageResponse> query, QCustomerCategory qcc, QCustomer qc, Sort sort) {
+	public static void setOrder(JPAQuery<CustomerPageRow> query, QCustomerCategory qcc, QCustomer qc, Sort sort) {
 
 		for (Sort.Order o : sort) {
 
@@ -90,9 +102,11 @@ public class CustomerPageResponse {
 			case "categoryName":
 				spec = qcc.name.asc();
 				break;
+				
 			case "wechatName":
 				spec = qc.wechatName.asc();
 				break;
+
 			case "name":
 				spec = qc.name.asc();
 				break;
@@ -126,5 +140,7 @@ public class CustomerPageResponse {
 		}
 		return spec;
 	}
+
+	
 
 }

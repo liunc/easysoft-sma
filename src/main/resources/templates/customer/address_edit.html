@@ -114,22 +114,24 @@
 				request.address = $.trim($('#edit_address').val());
 
 				$.ajax({
-					url : '/customer/address/edit',
-					type : 'POST',
+					url : '/api/customers/addresses',
+					type : 'PUT',
 					data : JSON.stringify(request),
 					contentType : 'application/json',
 					cache : false,
 					datatype : 'json',
-					success : function(json) {
-						if (json.result) {
+					complete: function (xhr) {
+						var json = JSON.parse(xhr.responseText);
+						if (json.success) {
 							$('#table_list').bootstrapTable('refresh');
 							$('#btn_edit_close').click();
 						} else {
+							var message = /*[[#{ edit_failed }]]*/ 'edit_failed';
 							App.alert({
 								container : '#edit_address_alert',
 								place : 'append',
 								type : 'danger',
-								message : json.message,
+								message : message + json.message,
 								close : true,
 								reset : true,
 								focus : true,

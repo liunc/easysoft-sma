@@ -6,6 +6,8 @@ import com.easysoft.lib.jdb.domain.dto.DetailResponse;
 
 public class CustomerDetailResponse extends DetailResponse {
  
+	private String categoryId;
+	
 	private String categoryName;
 
 	private String wechatName;
@@ -17,6 +19,14 @@ public class CustomerDetailResponse extends DetailResponse {
 	private String remark;
 
 	private BigDecimal balance;
+
+	public String getCategoryId() {
+		return categoryId;
+	}
+
+	public void setCategoryId(String categoryId) {
+		this.categoryId = categoryId;
+	}
 
 	public String getCategoryName() {
 		return categoryName;

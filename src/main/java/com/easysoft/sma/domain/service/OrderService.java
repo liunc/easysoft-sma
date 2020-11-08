@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.easysoft.lib.common.exception.BusinessException;
 import com.easysoft.lib.jdb.domain.dto.PageResponse;
-import com.easysoft.sma.domain.dto.SalesOrderPageResponse;
+import com.easysoft.sma.domain.dto.SalesOrderPageRow;
 import com.easysoft.sma.domain.dto.SalesOrderProductAddRequest;
 import com.easysoft.sma.domain.dto.SalesOrderProductItem;
 import com.easysoft.sma.domain.entity.SalesOrder;
@@ -14,7 +14,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface OrderService {
 
-        public PageResponse<SalesOrderPageResponse> findSalesOrder(String wechatName, String name, String consignee,
+        public PageResponse<SalesOrderPageRow> findSalesOrder(String wechatName, String name, String consignee,
                         String consigneeTelephone, String deliveryMode, String delay, String status, Pageable pageable);
 
         public void create(String customerId, String sender, String senderTelephone, String senderAddress,

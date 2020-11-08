@@ -11,7 +11,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 
 import org.springframework.data.domain.Sort;
 
-public class TransactionRecordPageResponse {
+public class TransactionPageRow {
 
     private String customerCategoryName;
 
@@ -93,7 +93,7 @@ public class TransactionRecordPageResponse {
         this.remark = remark;
     }
 
-    public static void setOrder(JPAQuery<TransactionRecordPageResponse> query, QTransactionRecord qtr, QCustomer qc,
+    public static void setOrder(JPAQuery<TransactionPageRow> query, QTransactionRecord qtr, QCustomer qc,
             QCustomerCategory qcc, Sort sort) {
 
         if (!sort.iterator().hasNext()) {

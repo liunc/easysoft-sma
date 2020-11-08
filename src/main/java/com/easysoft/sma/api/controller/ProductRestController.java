@@ -19,11 +19,11 @@ import com.easysoft.sma.domain.dto.ProductAddRequest;
 import com.easysoft.sma.domain.dto.ProductCategoryAddRequest;
 import com.easysoft.sma.domain.dto.ProductCategoryDetailResponse;
 import com.easysoft.sma.domain.dto.ProductCategoryPageRequest;
-import com.easysoft.sma.domain.dto.ProductCategoryPageResponse;
+import com.easysoft.sma.domain.dto.ProductCategoryPageRow;
 import com.easysoft.sma.domain.dto.ProductCategoryUpdateRequest;
 import com.easysoft.sma.domain.dto.ProductDetailResponse;
 import com.easysoft.sma.domain.dto.ProductPageRequest;
-import com.easysoft.sma.domain.dto.ProductPageResponse;
+import com.easysoft.sma.domain.dto.ProductPageRow;
 import com.easysoft.sma.domain.dto.ProductUpdateRequest;
 import com.easysoft.sma.domain.service.ProductService;
 
@@ -46,7 +46,7 @@ public class ProductRestController {
 
 	@ApiOperation("分页获取产品数据")
 	@RequestMapping(method = RequestMethod.GET)
-	public PageResponse<ProductPageResponse> getProductByPage(@PageableDefault Pageable pageable,
+	public PageResponse<ProductPageRow> getProductByPage(@PageableDefault Pageable pageable,
 			ProductPageRequest request) {
 		return this.productService.findProductByPage(pageable, request);
 	}
@@ -89,7 +89,7 @@ public class ProductRestController {
 
 	@ApiOperation("分页获取产品分类数据")
 	@RequestMapping(value="/categories", method = RequestMethod.GET)
-	public PageResponse<ProductCategoryPageResponse> getProductCategoryByPage(@PageableDefault Pageable pageable,
+	public PageResponse<ProductCategoryPageRow> getProductCategoryByPage(@PageableDefault Pageable pageable,
 			ProductCategoryPageRequest request) {
 		return this.productService.findProductCategoryByPage(pageable, request);
 	}

@@ -101,8 +101,8 @@
 			highlightCurrentUrl();
 			
 			$('#table_list').bootstrapTable({
-				url: '/customer/address/list',
-			  	method: 'post',
+				url: '/api/customers/addresses',
+			  	method: 'get',
 			   	pagination: true,    
 	           	sortable: true,     
 	          	sortOrder: 'asc', 
@@ -113,10 +113,9 @@
 	            search: false,  
 	            queryParams : function (params) {
 					return {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
-	                    limit: params.limit,   //页面大小
-	                    offset: params.offset,  //页码
-	                    sort: params.sort,
-	                    order: params.order, 
+						size: params.limit,   //页面大小
+						page: params.offset / params.limit,  //页码
+						sort: params.sort + ',' + params.order, 
 	                    wechatName : $.trim($('#query_wechat_name').val()),
 	                    name : $.trim($('#query_name').val()),
 	                    linkman : $.trim($('#query_linkman').val()),
@@ -131,47 +130,47 @@
 			    columns: [
 					{
 			          	field: 'customerCategoryName',
-			          	title: [[#{customer_category}]],
+			          	title: /*[[#{customer_category}]]*/ 'customer_category',
 			          	sortable: true
 			        },
 					{
 			          	field: 'customerWechatName',
-			          	title: [[#{wechat_name}]],
+			          	title: /*[[#{wechat_name}]]*/ 'wechat_name',
 			          	sortable: true,
 			          	formatter: nameFormatter
 			        },
 			        {
 			          	field: 'customerName',
-			          	title: [[#{personal_name}]],
+			          	title: /*[[#{personal_name}]]*/ 'personal_name',
 			          	sortable: true,
 			          	formatter: nameFormatter
 			        },
 					{
 				       	field: 'category',
-				       	title: [[#{category}]],
+				       	title: /*[[#{category}]]*/ 'category',
 				       	sortable: true,
 				       	width: 100,
 						formatter: categoryFormatter
 				    },
 				    {
 				       	field: 'linkman',
-				       	title: [[#{linkman}]],
+				       	title: /*[[#{linkman}]]*/ 'linkman',
 				       	sortable: true,
 				       	width:100
 				    },
 					{
 				       	field: 'telephone',
-				       	title: [[#{telephone}]],
+				       	title: /*[[#{telephone}]]*/ 'telephone',
 				       	sortable: true,
 				       	width:100
 				    },
 				   	{
 				       	field: 'address',
-				       	title: [[#{address}]]
+				       	title: /*[[#{address}]]*/ 'address'
 				   	},
 			        {
 				      	field: 'oper',
-				       	title: [[#{action}]],
+				       	title: /*[[#{action}]]*/ 'action',
 				      	width:110,
 				       	align: 'center',
 				       	formatter: 'operateFormatter'
@@ -200,51 +199,46 @@
 			}
 			return '';
 		}
-//address_category_consignee = 收件
-//address_category_sender = 寄件
+
 		function operateFormatter(value, row, index) {
-			return '<a href="/customer/address_edit_' + row.id + '" data-target="#modal_address" data-toggle="modal" class="btn btn-circle btn-icon-only btn-default" title="' + [[#{edit}]] +'"><i class="fa fa-pencil"></i></a>'
-				+ '<a href="javascript:;" onclick="deleteAddress(\'' + row.id +'\')" class="btn btn-circle btn-icon-only btn-default" title="' + [[#{delete}]] +'"><i class="fa fa-remove"></i></a>';
+			return '<a href="/customer/address_edit_' + row.id + '" data-target="#modal_address" data-toggle="modal" class="btn btn-circle btn-icon-only btn-default" title="' + /*[[#{edit}]]*/ 'edit' 
+			+'"><i class="fa fa-pencil"></i></a>'
+				+ '<a href="javascript:;" onclick="deleteAddress(\'' + row.id +'\')" class="btn btn-circle btn-icon-only btn-default" title="' + /*[[#{delete}]]*/ 'delete' 
+				+'"><i class="fa fa-remove"></i></a>';
 		}
 
 		function deleteAddress(id){
-			if(!confirm([[#{confirm_delete}]])){
+			if(!confirm(/*[[#{confirm_delete}]]*/ 'confirm_delete')){
 				return;
 			}
 			$.ajax({
-				url : '/customer/address/delete',
-				type : 'POST',
+				url : '/api/customers/addresses/' + id,
+				type : 'DELETE',
 				contentType : 'application/json',
-				data : id,
 				cache : false,
 				datatype : 'json',
-				success : function(json) {
-					if (json.result) {
+				complete: function (xhr) {
+					var json = JSON.parse(xhr.responseText);
+					var alertType = 'danger';
+					var alertIcon = 'warning';
+					var message = /*[[#{ delete_failed }]]*/ 'delete_failed';
+					if (json.success) {
+						alertType = 'success';
+						alertIcon = 'check';
+						message = /*[[#{ delete_success }]]*/ 'delete_success';
 						$('#table_list').bootstrapTable('refresh');
-						App.alert({
-							container : '#action_alert',
-							place : 'prepend',
-							type : 'success',
-							message : json.message,
-							close : true,
-							reset : true,
-							focus : true,
-							closeInSeconds : 5,
-							icon : 'check'
-						});
-					} else {
-						App.alert({
-							container : '#action_alert',
-							place : 'prepend',
-							type : 'danger',
-							message : json.message,
-							close : true,
-							reset : true,
-							focus : true,
-							closeInSeconds : 5,
-							icon : 'warning'
-						});
 					}
+					App.alert({
+						container: '#action_alert',
+						place: 'prepend',
+						type: alertType,
+						message: message + json.message,
+						close: true,
+						reset: true,
+						focus: true,
+						closeInSeconds: 5,
+						icon: alertIcon
+					});
 				}
 			});
 		}

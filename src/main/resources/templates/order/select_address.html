@@ -1,0 +1,64 @@
+<div class="modal-header" xmlns:th="http://www.thymeleaf.org">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+	<h4 class="modal-title" th:text="#{select_address}"></h4>
+</div>
+<div class="modal-body" xmlns:th="http://www.thymeleaf.org">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="table-scrollable table-scrollable-borderless">
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th th:text="#{linkman}"></th>
+							<th style="width: 150px;" th:text="#{telephone}"></th>
+							<th th:text="#{address}"></th>
+							<th style="width: 70px; text-align: center;" th:text="#{select}"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="address:${addresses}">
+							<td th:text="${address.linkman}"></td>
+							<td th:text="${address.telephone}"></td>
+							<td th:text="${address.address}"></td>
+							<td style="text-align: center;">
+								<a href="javascript:;" class="btn btn-circle btn-icon-only btn-default"
+									name="select_address" th:title="#{select}"><i
+										class="fa fa-hand-pointer-o"></i></a>
+							</td>
+						</tr>
+
+						<tr th:if="${#lists.isEmpty(addresses)}">
+							<td style="text-align: center;" colspan="4" th:text="#{data_not_matched}"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal-footer" xmlns:th="http://www.thymeleaf.org">
+	<button type="button" id="btn_close" class="btn default" data-dismiss="modal">
+		<i class="fa fa-close"></i> <span th:text="#{close}"></span>
+	</button>
+	<input type="hidden" id="address_category" th:value="${category}" />
+</div>
+
+<script type="text/javascript" th:inline="javascript">
+	/*<![CDATA[*/
+
+	$(function () {
+
+		$('a[name="select_address"]').click(function () {
+			var val = $(this).parents("td:first").siblings(); 
+			var category = $('#address_category').val();
+
+			selectAddress(category, val);
+
+			$('#btn_close').click();
+		});
+
+	});
+
+	/*]]>*/
+</script>

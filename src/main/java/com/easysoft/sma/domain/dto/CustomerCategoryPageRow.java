@@ -6,7 +6,7 @@ import com.easysoft.sma.domain.entity.QCustomerCategory;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQuery;
 
-public class CustomerCategoryPageResponse {
+public class CustomerCategoryPageRow {
 
 	private String id;
 
@@ -48,7 +48,7 @@ public class CustomerCategoryPageResponse {
 		this.remark = remark;
 	}
 
-	public static void setOrder(JPAQuery<CustomerCategoryPageResponse> query, QCustomerCategory qcc, Sort sort) {
+	public static void setOrder(JPAQuery<CustomerCategoryPageRow> query, QCustomerCategory qcc, Sort sort) {
 
 		for (Sort.Order o : sort) {
 

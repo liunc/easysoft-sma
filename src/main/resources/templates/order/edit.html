@@ -1,0 +1,533 @@
+<div id="edit_order_alert"></div>
+<h4 th:text="#{customer_information}"> </h4>
+<hr />
+<div class="form-horizontal">
+	<div class="form-body">
+		<input type="hidden" id="customer_id" name="customer_id" th:value="${customer.id}" />
+		<div class="form-group">
+			<label class="control-label col-md-3"> <span th:text="#{customer_category}"></span>
+			</label>
+			<div class="col-md-9">
+				<span class="form-control-static" th:text="${customerCategory}"></span>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-md-3"> <span th:text="#{wechat_name}"></span>
+			</label>
+			<div class="col-md-9">
+				<span class="form-control-static" th:text="${customer.wechatName}"></span>
+			</div>
+		</div>
+		<div th:unless="${#strings.isEmpty(customer.name)}" class="form-group">
+			<label class="control-label col-md-3"> <span th:text="#{personal_name}"></span>
+			</label>
+			<div class="col-md-9">
+				<span class="form-control-static" th:text="${customer.name}"></span>
+			</div>
+		</div>
+		<div th:unless="${#strings.isEmpty(customer.remark)}" class="form-group">
+			<label class="col-md-3 control-label" th:text="#{remark}"></label>
+
+			<div class="col-md-9">
+				<span class="form-control-static" th:text="${customer.remark}"></span>
+			</div>
+		</div>
+	</div>
+</div>
+<hr />
+<h4 th:text="#{select_product}"> </h4>
+<hr />
+<div class="table-scrollable table-scrollable-borderless">
+	<select id="query_delivery_mode" class="form-control input-sm" style="display:none;">
+		<option th:each="deliveryMode:${deliveryModes}" th:value="${deliveryMode.key}"
+								th:text="${deliveryMode.value}"></option>
+	</select>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th th:text="#{product_category}"></th>
+				<th style="width: 150px;" th:text="#{sales_year}"></th>
+				<th th:text="#{name}"></th>
+				<th style="width: 150px;" th:text="#{spec}"></th>
+				<th style="width: 150px;" th:text="#{support_delivery_mode}"></th>
+				<th style="width: 150px;" th:text="#{price}"></th>
+				<th style="width: 100px;" th:text="#{quantity}"></th>
+				<th style="width: 70px; text-align: center;" th:text="#{select}"></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:id="product.id" th:each="product:${products}">
+				<td th:text="${product.categoryName}"></td>
+				<td th:text="${product.salesYear} + #{year}"></td>
+				<td th:text="${product.name}"></td>
+				<td th:text="${product.spec} + ${product.specUnit}"></td>
+				<td name="supportDeliveryMode" th:text="${product.supportDeliveryMode}"></td>
+				<td>
+					<span th:id="'price' + ${product.id}" th:text="${product.price}"></span>
+					<span th:text="#{yuan} + '/' + ${product.packUnit}"></span>
+				</td>
+				<td>
+					<div class="input-group input-group-sm">
+						<input name="product_quantity" type="text" class="form-control" th:id="'quantity' + ${product.id}"
+							th:aria-describedby="'saq' + ${product.id}" th:value="${product.quantity}" />
+						<span class="input-group-addon" th:id="'saq' + ${product.id}"
+												th:text="${product.packUnit}"></span>
+					</div>
+				</td>
+				<td th:if=" ${product.quantity} gt '0'" style="text-align: center;">
+					<label class="mt-checkbox mt-checkbox-single mt-checkbox-outline">
+						<input th:id="'ch' + ${product.id}" type="checkbox" name="product_select" class="checkboxes" th:value="${product.id}" checked="checked" /> <span></span>
+					</label>
+				</td>
+				<td th:if=" ${product.quantity} eq ''" style="text-align: center;">
+					<label class="mt-checkbox mt-checkbox-single mt-checkbox-outline">
+						<input th:id="'ch' + ${product.id}" type="checkbox" name="product_select" class="checkboxes" th:value="${product.id}" /> <span></span>
+					</label>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+<hr />
+<div class="form-inline">
+	<div class="form-body">  
+		<div class="form-group">
+			<strong style="padding-left: 12px; padding-right: 12px;" th:text="#{total}"></strong>
+			<label style="padding-left: 12px; padding-right: 12px;" th:text="#{amount_calculated}"></label>
+			<div class="input-group input-group-sm" style="width:100px;">
+				<input type="text" id="edit_amount_calculated" name="edit_amount_calculated" value="0" th:value="${vm.amountCalculated}" class="form-control" aria-describedby="sizing-addon1" readonly /> 
+				<span class="input-group-addon" id="sizing-addon1" th:text="#{yuan}"></span>
+			</div>
+		</div> 
+		<div class="form-group">
+			<label style="padding-left: 12px; padding-right: 12px;" th:text="#{discounted_amount}"></label>
+			<div class="input-group input-group-sm" style="width:100px;">
+				<input type="text" id="edit_discounted_amount" name="edit_discounted_amount" class="form-control" th:value="${vm.discountedAmount}" aria-describedby="sizing-addon2" /> 
+				<span class="input-group-addon" id="sizing-addon2" th:text="#{yuan}"></span>
+			</div>
+		</div> 
+		<div class="form-group">
+			<label style="padding-left: 12px; padding-right: 12px;" th:text="#{amount_receivable}"></label>
+			<div class="input-group input-group-sm" style="width:100px;">
+				<input type="text" id="edit_amount_receivable" name="edit_amount_receivable" class="form-control"  aria-describedby="sizing-addon3" readonly /> 
+				<span class="input-group-addon" id="sizing-addon3" th:text="#{yuan}"></span>
+			</div>
+		</div>
+	</div>
+</div> 
+<hr />
+					
+<form id="edit_order_form" action="#" class="form-horizontal">
+	<div class="form-body">
+		<h4 class="form-section">
+			<span th:text="#{order_information}"> </span> 
+		</h4>
+		<input type="hidden" id="edit_id" name="edit_id" th:value="${vm.id}" />
+		<div class="form-group">
+			<label class="control-label col-md-3"> <span th:text="#{sequence_number}"></span><span class="required">
+					* </span>
+			</label>
+			<div class="col-md-4">
+				<input type="text" id="edit_sequence_number" name="edit_sequence_number" class="form-control input-sm" th:value="${vm.sequenceNumber}" />
+			</div>
+			<div class="col-md-5"></div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-md-3"> <span th:text="#{delivery_mode}"></span><span
+					class="required">
+					* </span>
+			</label>
+			<input type="hidden" id="edit_delivery_mode_value" th:value="${vm.deliveryMode}" />
+			<div class="col-md-4">
+				<div class="mt-radio-inline">
+					<label class="mt-radio" th:each="mode:${deliveryModes}">
+						<input type="radio" name="edit_delivery_mode" 
+							th:value="${mode.key}" th:text="${mode.value}" />
+						<span> </span>
+					</label>
+				</div>
+			</div>
+			<div class="col-md-5"></div>
+		</div>
+		<div class="form-group">
+			<input type="hidden" id="edit_delay_value" th:value="${vm.delay}" />
+			<div class="col-md-offset-3 col-md-4">
+				<label class="mt-checkbox">
+					<input type="checkbox" name="edit_delay" id="edit_delay" th:text="#{delay}" /> <span></span>
+				</label>
+			</div>
+
+
+			<div class="col-md-5"></div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-md-3"> <span th:text="#{remark}"></span>
+			</label>
+			<div class="col-md-4">
+				<textarea class="form-control input-sm" id="edit_remark" name="edit_remark" th:text="${vm.remark}"></textarea>
+			</div>
+			<div class="col-md-5"></div>
+		</div>
+		<h4 class="form-section">
+			<span th:text="#{sender_information}"> </span> <small th:text="#{sender_tip}"></small>
+		</h4>
+		<div class="form-group">
+			<div class="col-md-offset-3 col-md-4">
+				<span class="form-control-static">
+					<a th:href="@{/order/select_address/} + ${customer.id} + '/1'" data-target="#modal_select_address" data-toggle="modal" th:text="#{use_history_data}"></a>
+				</span>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-md-3"> <span th:text="#{sender}"></span>
+			</label>
+			<div class="col-md-4">
+				<input type="text" id="edit_sender" name="edit_sender" class="form-control input-sm" th:value="${vm.sender}" />
+			</div>
+			<div class="col-md-5"></div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-md-3"> <span th:text="#{sender_telephone}"></span>
+			</label>
+			<div class="col-md-4">
+				<input type="text" id="edit_sender_telephone" name="edit_sender_telephone" class="form-control input-sm" th:value="${vm.senderTelephone}" />
+			</div>
+			<div class="col-md-5"></div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-md-3"> <span th:text="#{sender_address}"></span>
+			</label>
+			<div class="col-md-4">
+				<textarea class="form-control input-sm" id="edit_sender_address" name="edit_sender_address" th:text="${vm.senderAddress}"></textarea>
+			</div>
+			<div class="col-md-5"></div>
+		</div>
+
+		<h4 class="form-section">
+			<span th:text="#{consignee_information}"> </span> <small th:text="#{consignee_tip}"></small>
+		</h4>
+		<div class="form-group">
+			<div class="col-md-offset-3 col-md-4">
+				<span class="form-control-static">
+					<a th:href="@{/order/select_address/} + ${customer.id} + '/2'" data-target="#modal_select_address" data-toggle="modal" th:text="#{use_history_data}"></a>
+				</span>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-md-3"> <span th:text="#{consignee}"></span>
+			</label>
+			<div class="col-md-4">
+				<input type="text" id="edit_consignee" name="edit_consignee" class="form-control input-sm"  th:value="${vm.consignee}" />
+			</div>
+			<div class="col-md-5"></div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-md-3"> <span th:text="#{consignee_telephone}"></span>
+			</label>
+			<div class="col-md-4">
+				<input type="text" id="edit_consignee_telephone" name="edit_consignee_telephone" class="form-control input-sm" th:value="${vm.consigneeTelephone}" />
+			</div>
+			<div class="col-md-5"></div>
+		</div>
+		<div class="form-group">
+			<label class="control-label col-md-3"> <span th:text="#{consignee_address}"></span>
+			</label>
+			<div class="col-md-4">
+				<textarea  class="form-control input-sm" id="edit_consignee_address" name="edit_consignee_address" th:text="${vm.consigneeAddress}"></textarea>
+			</div>
+			<div class="col-md-5"></div>
+		</div>
+	</div>
+
+	<div class="form-actions">
+		<div class="row">
+			<div class="col-md-offset-3 col-md-9">
+				<button type="button" class="btn btn-default"
+						onclick="closeTab()">
+						<i class="fa fa-close"></i> <span th:text="#{cancel}"></span>
+					</button>
+				<button type="button" class="btn blue" id="btn_submit">
+					<i class="fa fa-check"></i> <span th:text="#{submit}"></span>
+				</button>
+				<button type="button" class="btn blue" id="btn_submit_and_continue">
+					<i class="fa fa-check"></i> <span th:text="#{submit_and_continue_add_order}"></span>
+				</button>
+				<button type="button" class="btn blue" id="btn_submit_and_continue_for_same_customer">
+					<i class="fa fa-check"></i> <span th:text="#{submit_and_continue_add_order_for_same_customer}"></span>
+				</button>
+			</div>
+		</div>
+	</div>
+</form>
+<div class="modal fade" id="modal_select_address" role="basic" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body">
+				<img th:src="@{/assets/global/img/loading-spinner-grey.gif}" alt="" class="loading">
+				<span th:text="#{modal_loading}"></span>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+	<script type="text/javascript" th:inline="javascript">
+		/*<![CDATA[*/
+
+		function deliveryModeFormatter(value) {
+			var arr = value.split(',');
+			for (var i = 0; i < arr.length; i++) {
+				arr[i] = $('#query_delivery_mode > option[value="' + arr[i] + '"]').text();
+			}
+			return arr.join(',');
+		}
+
+		var submitType = 0;
+
+		$(function () {
+
+			$('td[name="supportDeliveryMode"]').each(function () {
+				$(this).text(deliveryModeFormatter($(this).text()))
+			});
+
+			$('input[name="product_quantity"]').bind('input propertychange', function () {
+
+				var val = $.trim($(this).val());
+				var id = ($(this).attr('id')).substr(8, 32)
+				if (val != '') {
+					if (isNaN(val) || parseFloat(val) <= 0) {
+						$(this).val('');
+						if ($('#ch' + id).is(':checked')) {
+							$('#ch' + id).removeAttr('checked');
+						}
+						alert(/*[[#{ validator_number }]]*/ 'validator_number');
+					}
+					else {
+						console.info($('#ch' + id).is(':checked'));
+						if (!($('#ch' + id).is(':checked'))) {
+							console.info('checked');
+							$('#ch' + id).prop('checked', true);
+						}
+					}
+				}
+				else {
+					$('#ch' + id).removeAttr('checked');
+				}
+				calculateAmount();
+			});
+
+			$('input[name="product_select"]').click(function () {
+				var val = $(this).val();
+				var quantity = '';
+				if ($(this).is(':checked')) {
+					quantity = '1';
+				}
+				$('#quantity' + val).val(quantity);
+
+				calculateAmount();
+			});
+
+			$('#edit_discounted_amount').bind('input propertychange', function () {
+				var val = $.trim($(this).val());
+				if (val != '') {
+					if (isNaN(val) || parseFloat(val) < 0) {
+						$(this).val('0');
+						alert(/*[[#{ validator_number }]]*/ 'validator_number');
+					}
+				}
+				else {
+					$(this).val('0');
+				}
+				if (val.indexOf('0') == 0 && val.length > 1) {
+					$(this).val(val.substr(1));
+				}
+				calculateAmount();
+			});
+
+			$('#edit_order_form').validate({
+				errorElement: 'span',
+				errorClass: 'help-block help-block-error',
+				focusInvalid: false,
+				ignore: '',
+				rules: {
+					edit_id: {
+						required: true
+					},
+					edit_sequence_number: {
+						required: true,
+						number: true
+					},
+					edit_delivery_mode: {
+						required: true
+					},
+					edit_remark: {
+						maxlength: 512
+					}
+				},
+				messages: {},
+				invalidHandler: function (e, t) {
+				},
+				errorPlacement: function (e, r) {
+					r.parents("div[class='col-md-4']:first").next().html(e)
+				},
+				highlight: function (e) {
+					$(e).closest(".form-group").addClass("has-error")
+				},
+				unhighlight: function (e) {
+					$(e).closest(".form-group").removeClass("has-error")
+				},
+				success: function (e) {
+					e.closest(".form-group").removeClass("has-error")
+				},
+				submitHandler: function (e) {
+
+					var products = [];
+
+					$('input[name="product_select"]').each(function () {
+						if ($(this).is(':checked')) {
+							var val = $(this).val();
+							var quantity = parseFloat($('#quantity' + val).val());
+							var product = {};
+							product.id = val;
+							product.quantity = quantity;
+							products.push(product);
+						}
+					});
+					if (products.length == 0) {
+						App.alert({
+							container: '#edit_order_alert',
+							place: 'append',
+							type: 'danger',
+							message: /*[[#{ please_select_product }]]*/ 'please_select_product',
+							close: true,
+							reset: true,
+							focus: true,
+							closeInSeconds: 5
+						});
+						return false;
+					}
+
+					var request = {};
+					request.id = $.trim($('#edit_id').val());
+					request.products = products;
+					request.amountCalculated = parseFloat($('#edit_amount_calculated').val());
+					request.discountedAmount = parseFloat($('#edit_discounted_amount').val());
+					request.sequenceNumber = parseFloat($('#edit_sequence_number').val());
+					request.deliveryMode = $.trim($('input[name="edit_delivery_mode"]:checked').val());
+					request.sender = $.trim($('#edit_sender').val());
+					request.senderTelephone = $.trim($('#edit_sender_telephone').val());
+					request.senderAddress = $.trim($('#edit_sender_address').val());
+					request.consignee = $.trim($('#edit_consignee').val());
+					request.consigneeTelephone = $.trim($('#edit_consignee_telephone').val());
+					request.consigneeAddress = $.trim($('#edit_consignee_address').val());
+					request.delay = $('#edit_delay').is(':checked') ? 'Y' : 'N';
+					request.remark = $.trim($('#edit_remark').val());
+
+					$.ajax({
+						url: '/order/edit',
+						type: 'POST',
+						data: JSON.stringify(request),
+						contentType: 'application/json',
+						cache: false,
+						datatype: 'json',
+						success: function (json) {
+							if (json.result) {
+								if(submitType == 0){
+									$('#table_list').bootstrapTable('refresh');
+									closeTab();
+								}
+								else if(submitType == 1){
+									window.location.href = '/order/select_customer';
+								}
+								else if(submitType == 2){
+									window.location.href = '/order/add_' + $.trim($('#customer_id').val());
+								}
+							} else {
+								App.alert({
+									container: '#edit_order_alert',
+									place: 'append',
+									type: 'danger',
+									message: json.message,
+									close: true,
+									reset: true,
+									focus: true,
+									closeInSeconds: 5
+								});
+							}
+						}
+					});
+				}
+			})
+
+			var deliveryMode = $('#edit_delivery_mode_value').val();
+			$.each($('input[name="edit_delivery_mode"]'), function () {
+				if ($(this).val() == deliveryMode) {
+					$(this).attr("checked", "checked");
+					return;
+				}
+			});
+
+			var delay = $('#edit_delay_value').val();
+			if(delay == 'Y'){
+				$('#edit_delay').prop('checked', true);
+			}
+
+			$('#edit_amount_receivable').val($('#edit_amount_calculated').val() - $('#edit_discounted_amount').val());
+
+			$('#btn_submit').click(function () {
+				submitType = 0;
+				$('#edit_order_form').submit();
+			})
+
+			$('#btn_submit_and_continue').click(function () {
+				submitType = 1;
+				$('#edit_order_form').submit();
+			})
+
+			$('#btn_submit_and_continue_for_same_customer').click(function () {
+				submitType = 2;
+				$('#edit_order_form').submit();
+			})
+		});
+
+		function selectProduct(obj) {
+			var val = $(obj).val();
+			var quantity = '';
+			if ($(obj).is(':checked')) {
+				quantity = '1';
+			}
+			$('#quantity' + val).val(quantity);
+
+			calculateAmount();
+		}
+
+		function calculateAmount() {
+
+			var amount = 0;
+			$('input[name="product_select"]').each(function () {
+				if ($(this).is(':checked')) {
+					var val = $(this).val();
+					var price = parseFloat($.trim($('#price' + val).text()));
+					var quantity = parseFloat($('#quantity' + val).val());
+					amount += price * quantity;
+				}
+			});
+			$('#edit_amount_calculated').val(amount);
+			amount -= parseFloat($.trim($('#edit_discounted_amount').val()));
+			$('#edit_amount_receivable').val(amount);
+		}
+
+		function selectAddress(category, val) {
+			if (category == '1') {
+				$('#edit_sender').val(val[0].innerText);
+				$('#edit_sender_telephone').val(val[1].innerText);
+				$('#edit_sender_address').val(val[2].innerText);
+			}
+			else {
+				$('#edit_consignee').val(val[0].innerText);
+				$('#edit_consignee_telephone').val(val[1].innerText);
+				$('#edit_consignee_address').val(val[2].innerText);
+			}
+		}
+		/*]]>*/
+	</script>

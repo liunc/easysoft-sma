@@ -19,8 +19,8 @@
 						<div class="col-md-6">
 							<label class="checkbox-inline" th:each="mode:${transactionSource}">
 								<input type="radio" name="add_transaction_source" 
-									th:value="${mode.key}" />
-								<span th:text="${mode.value}"></span>
+									th:value="${mode.value}" />
+								<span th:text="${mode.text}"></span>
 							</label>
 						</div>
 						<div class="col-md-3">
@@ -107,27 +107,29 @@
 
 				var request = {};
 				request.customerId = /*[[${customerId}]]*/ '';
-				request.transactionSource = $.trim($('input[name="add_transaction_source"]:checked').val());
+				request.category = '1';
+				request.source = $.trim($('input[name="add_transaction_source"]:checked').val());
 				request.amount = parseFloat($.trim($('#add_amount').val()));
 				request.remark = $.trim($('#add_remark').val());
 
 				$.ajax({
-					url : '/customer/recharge',
+					url : '/api/customers/transactions',
 					type : 'POST',
 					data : JSON.stringify(request),
 					contentType : 'application/json',
 					cache : false,
 					datatype : 'json',
-					success : function(json) {
-						if (json.result) {
+					complete: function (xhr) {
+						var json = JSON.parse(xhr.responseText);
 							$('#table_list').bootstrapTable('refresh');
 							$('#btn_add_close').click();
 						} else {
+							var message = /*[[#{ action_failed }]]*/ 'action_failed';
 							App.alert({
 								container : '#recharge_alert',
 								place : 'append',
 								type : 'danger',
-								message : json.message,
+								message : message + json.message,
 								close : true,
 								reset : true,
 								focus : true,

@@ -20,8 +20,8 @@
 							<select id="add_category" name="add_category"
 								class="form-control input-sm">
 								<option value="" th:text="#{please_select}"></option>
-								<option th:each="category:${categories}" th:value="${category.key}"
-									th:text="${category.value}"></option>
+								<option th:each="category:${categories}" th:value="${category.value}"
+									th:text="${category.text}"></option>
 							</select>
 						</div>
 						<div class="col-md-3">
@@ -126,22 +126,24 @@
 				request.remark = $.trim($('#add_remark').val());
 
 				$.ajax({
-					url : '/customer/add',
+					url : '/api/customers',
 					type : 'POST',
 					data : JSON.stringify(request),
 					contentType : 'application/json',
 					cache : false,
 					datatype : 'json',
-					success : function(json) {
-						if (json.result) {
+					complete: function (xhr) {
+						var json = JSON.parse(xhr.responseText);
+						if (json.success) {
 							$('#table_list').bootstrapTable('refresh');
 							$('#btn_add_close').click();
 						} else {
+							var message = /*[[#{ add_failed }]]*/ 'add_failed';
 							App.alert({
 								container : '#add_customer_alert',
 								place : 'append',
 								type : 'danger',
-								message : json.message,
+								message : message +　json.message,
 								close : true,
 								reset : true,
 								focus : true,
